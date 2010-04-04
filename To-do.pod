@@ -1,0 +1,75 @@
+=head1 Feature list for version 0.01
+
+=over 4
+
+=item *
+
+Manage directories to scan/ignore
+
+=item *
+
+Set title/tags from images/directories
+
+=item *
+
+Supported formats:
+
+    CR2 (Image::ExifTool+Imager)
+    C<JPG> (Imager)
+    C<PNG> (Imager)
+    SVG (Inkscape+Imager)
+
+=item *
+
+Target directory for the images worked on within the last 3 days, 
+or last 100) thumbnails, whichever is larger
+
+=item *
+
+Generate thumbnails (via L<Imager>)
+
+=item *
+
+Directory list as RSS+Atom+HTML/Slideshow
+
+=item *
+
+Set thumbnail size
+
+=item *
+
+Have a template directory
+
+=back
+
+=head1 Feature list for version 0.02
+
+=over 4
+
+=item *
+
+Have HTML themes in C<.tar.gz> files
+
+=item *
+
+Automated upload via WebDAV / SCP / tar+ssh+untar / copy
+
+=item *
+
+Turn image conversion/thumbnail generation into plugins
+
+=back
+
+=head2 Feature list for version 0.03
+
+=over 4
+
+=item *
+
+Create a nice-ish wxPerl UI
+
+=item *
+
+Create more uploaders for Picasa and Flickr
+
+=back
