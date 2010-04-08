@@ -2,7 +2,7 @@
 
 =over 4
 
-=item *
+=item * (done)
 
 Manage directories to scan/ignore
 
@@ -10,7 +10,7 @@ Manage directories to scan/ignore
 
 Set title/tags from images/directories
 
-=item *
+=item * (done)
 
 Supported formats:
 
@@ -19,20 +19,20 @@ Supported formats:
     C<PNG> (Imager)
     SVG (Inkscape+Imager)
 
-=item *
+=item * (done)
 
 Target directory for the images worked on within the last 3 days, 
 or last 100) thumbnails, whichever is larger
 
-=item *
+=item * (done)
 
-Generate thumbnails (via L<Imager>)
-
-=item *
-
-Directory list as RSS+Atom+HTML/Slideshow
+Generate thumbnails (via L<Image::Thumbnail> and L<Imager>)
 
 =item *
+
+Thumbnail list as RSS+Atom+HTML/Slideshow
+
+=item * (done)
 
 Set thumbnail size
 

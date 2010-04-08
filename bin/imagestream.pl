@@ -4,9 +4,21 @@ use Path::Class;
 use File::Find;
 #use Memoize;
 use List::MoreUtils qw(zip);
+use Decision::Depends;
 use Imager;
 use Image::ExifTool qw(:Public);
 use Image::Thumbnail;
+use File::Temp qw( tempfile );
+
+use Getopt::Long;
+GetOptions(
+    'f|force' => \my $force,
+    'i|inkscape' => \my $inkscape,
+);
+
+$inkscape ||= 'C:\\Programme\\Inkscape\\inkscape.exe';
+
+Decision::Depends::Configure({ Force => $force });
 
 sub collect_images {
     my ($search,$reject) = @_;
@@ -26,13 +38,84 @@ sub collect_images {
     @images
 }
 
-use vars '%rotation';
+use vars qw'%rotation %thumbnail_handlers';
 
 %rotation = (
     ''                    => 0,
     'Horizontal (normal)' => 0,
     'Rotate 270 CW'       => 270,
 );
+
+#my $dec = Decision::Depends->new();
+
+%thumbnail_handlers = (
+    'svg'  => \&extract_thumbnail_svg,
+    'svgz' => \&extract_thumbnail_svg,
+);
+
+sub create_thumbnail_from_blob {
+    my ($info,$thumbname,$rotate,$size,$i) = @_;
+    # XXX We're Imager-specific here
+    if (! $i) {
+        if ($info->{blob}) {
+            $i = Imager->new->read(data => ${$info->{blob}});
+        } else {
+            $i = Imager->new->read(file => "$info->{file}");
+        };
+        $i = $i->rotate(degrees => $rotate) if $rotate;
+    };
+    
+    my $t = Image::Thumbnail->new(
+        module     => 'Imager',
+        object     => $i,
+        size       => $size,
+        quality    => 90,
+        outputpath => $thumbname,
+        create => 1,
+    );
+    
+    return $i;
+}
+
+sub create_thumbnail_sizes {
+    my ($info,$target,$rotate,$sizes) = @_;
+    my $i;
+    for my $s (@$sizes) {
+        my $thumbname = sprintf($target, $s);
+        
+        if (test_dep( -target => $thumbname, -depend => $info->{file} )) {
+            $i = create_thumbnail_from_blob($info,$thumbname,$rotate,$s,$i);
+        } else {
+            #warn "$thumbname is newer than $info->{file}->basename";
+        }
+    }
+};
+
+sub extract_thumbnail_svg {
+    # create a temporary PNG image from which we'll subsequently
+    my ($info,$target,$sizes,$force) = @_;
+    my ($fh, $tempfile) = tempfile();
+    close $fh; # we're on Windows
+    my $source = $info->{file};
+
+    my $cmd = qq{"$inkscape" -D "--export-png=$tempfile" --export-text-to-path --without-gui "$source"};
+    system($cmd) == 0
+        or warn "Couldn't run [$cmd]: $!/$?";
+    
+    # create the thumbnail(s)
+    my $blob = do {
+        local $/;
+        open my $fh, '<', $tempfile
+            or die "Couldn't read '$tempfile': $!";
+        binmode $fh;
+        <$fh>;
+    };
+    $info->{blob} = \$blob;
+    create_thumbnail_sizes($info,$target,0,$sizes);
+    
+    unlink $tempfile
+        or warn "Couldn't remove temporary file '$tempfile'\n";
+};
 
 sub create_thumbnail {
     # XXX Should we use only squares and cut?
@@ -44,34 +127,19 @@ sub create_thumbnail {
     # We should also rotate the thumbnail according to the Exif rotation!
     my $img_info = ImageInfo( $info->{file}->stringify, ['PreviewImage','KeyWords','Orientation'], { List => 1 } );
 
+    # XXX Extension-based filetype handling isn't all that hot, but easier
+    #     than pulling in File::MMagic or File::MimeMagic etc.
+    (my $extension = lc $info->{file}->stringify) =~ s/.*\.//;
+
     my $rotate = $rotation{ $img_info->{Orientation} || '' };
     warn "Unknown image orientation '$img_info->{Orientation}'"
         unless defined $rotate;
     
+    # If we can find an embedded preview image, use that:
     if ($img_info and $img_info->{PreviewImage}) {
-        # XXX We're Imager-specific here
-        my $i = Imager->new->read( data => ${ $img_info->{PreviewImage} });
-        $i = $i->rotate(degrees => $rotate) if $rotate;
-        for my $s (@$sizes) {
-            my $thumbname = sprintf( $target, $s);
-            if (-f $thumbname) {
-                my $m = (stat $thumbname)[9];
-                if ($m >= $info->{mtime}) {
-                    # exists and is newer than original image, so skip
-                    # generation
-                    next
-                }
-            }
-            
-            my $t = Image::Thumbnail->new(
-                module     => 'Imager',
-                object     => $i,
-                size       => $s,
-                quality    => 90,
-                outputpath => $thumbname,
-                create => 1,
-            );
-        }
+        create_thumbnail_sizes(\$img_info->{PreviewImage},$target,$sizes);
+    } elsif (my $handler = $thumbnail_handlers{ $extension }) {
+        $handler->($info,$target,$sizes);
     }
 }
 
@@ -79,6 +147,9 @@ sub create_thumbnails {
     my ($output_directory, $size, @files) = @_;
     for my $info (@files) {
         my $target = $info->{file}->basename;
+        
+        # XXX Better name generation wanted here, for clashing filenames
+        #     in different directories
         $target =~ s/\.(\w+)$/_%03d_t.jpg/i;
         $target = file( $output_directory, $target );
         create_thumbnail($info,$target,$size);
@@ -93,7 +164,7 @@ sub read_config {
 
 read_config();
 
-my (@collect,@reject,%found,@preferred, $output_directory,$minimum);
+my (@collect,@reject,%found,@preferred, $output_directory,$minimum,@sizes);
 
 # Configuration DSL
 sub collect($) {
@@ -114,6 +185,10 @@ sub output($) {
 
 sub minimum($) {
     $minimum = shift;
+};
+
+sub size($) {
+    push @sizes, shift;
 };
 
 sub collect_image_information {
@@ -145,6 +220,9 @@ minimum 100;
 prefer '.cr2' => '.jpg';
 prefer '.svg' => '.jpg';
 prefer '.svg' => '.png';
+
+size 160;
+size 640;
 
 output 'OUTPUT';
 
