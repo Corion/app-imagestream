@@ -30,7 +30,7 @@ Generate thumbnails (via L<Image::Thumbnail> and L<Imager>)
 
 =item *
 
-Thumbnail list as RSS+Atom+HTML/Slideshow
+Thumbnail list as RSS+Atom+HTML/Slideshow/Timeline
 
 =item * (done)
 
@@ -38,7 +38,7 @@ Set thumbnail size
 
 =item *
 
-Have a template directory
+Have a theme directory
 
 =back
 
@@ -52,15 +52,16 @@ Config::Gitlike configuration instead or in addition to the DSL
 
 =item *
 
-Have HTML themes in C<.tar.gz> files
-
-=item *
-
 Automated upload via WebDAV / SCP / tar+ssh+untar / copy
 
 =item *
 
 Turn image conversion/thumbnail generation into plugins
+
+=item *
+
+Have HTML themes in C<.tar.gz> files. If in doubt, extract
+a theme into a tempdir and use that tempdir as theme directory.
 
 =back
 
@@ -75,5 +76,18 @@ Create a nice-ish wxPerl UI
 =item *
 
 Create more uploaders for Picasa and Flickr
+
+=item *
+
+Have a way to generate watermarks
+
+=item *
+
+Have .tar and .tar.gz and .zip as theme formats
+
+=item *
+
+Have a directory cascade mechanism to merge/inherit from themes
+(without dependency management, mind you)
 
 =back
