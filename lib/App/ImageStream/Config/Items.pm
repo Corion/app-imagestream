@@ -140,7 +140,7 @@ Example:
 %items = map {
                 /^=head2 C<< (\w+) (.*) >>\s+(.*)$/ms
                     or die "Malformed config item '$_'";
-                my ($name,$spec,$desc) = @_;
+                my ($name,$spec,$desc) = ($1,$2,$3);
                 my $count =()= ($spec =~ m/,/g);
                 $name => {
                     name      => $name,
@@ -150,7 +150,12 @@ Example:
                 },
             }
             grep /^=head2/, 
-            split /(=head2)/,
+            split /(?==head2)/,
             $config_raw;
+#warn $config_raw;
+
+#use Data::Dumper;
+#warn Dumper \%items;
+
 
 1;

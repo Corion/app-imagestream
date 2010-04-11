@@ -8,6 +8,9 @@ use Imager;
 use Image::ExifTool qw(:Public);
 use Image::Thumbnail;
 use File::Temp qw( tempfile );
+use App::ImageStream::Config::Items;
+use App::ImageStream::Config::DSL;
+use Data::Dumper;
 
 use Getopt::Long;
 GetOptions(
@@ -140,7 +143,7 @@ sub fetch_image_metadata {
 }
 
 sub generate_thumbnail_name {
-    my ($info,$target) = @_;
+    my ($info,$size, $target) = @_;
     $target =~ /(.*)\.\w+$/;
     $target = $1;
     my $extension = $info->{extension};
@@ -162,7 +165,7 @@ sub generate_thumbnail_name {
     my %parts = (
         file => $target,
         extension => $extension,
-        size => $size,
+        size => sprintf( '%04d', $size ),
         tags => $tags,
     );
     $target = join "_", @parts{ @parts };
@@ -194,59 +197,28 @@ sub create_thumbnails {
     for my $info (@files) {
         my $target = $info->{file}->basename;
         
-        $target = generate_thumbnail_name($info,$target);
+        $target = generate_thumbnail_name($info,$size,$target);
         $target = file( $output_directory, $target );
         create_thumbnail($info,$target,$size);
     };
 }
 
-sub read_config {
-}
-
-read_config();
-
-my (@collect,
-    %exclude_tags,
-    @reject,
-    %found,
-    @preferred,
-    $output_directory,
-    $minimum,
-    @sizes
+my $cfg = App::ImageStream::Config::DSL->parse_config_file(
+    \%App::ImageStream::Config::Items::items,
+    'imagestream.cfg'
 );
 
-# Configuration DSL
-sub collect($) {
-    push @collect, @_;
-};
+warn Dumper $cfg;
 
-sub reject($) {
-    push @reject, @_;
-};
-
-sub prefer($$) {
-    push @preferred, [ $_[0], $_[1] ];
-};
-
-sub output($) {
-    $output_directory = shift;
-};
-
-sub minimum($) {
-    $minimum = shift;
-};
-
-sub size($) {
-    push @sizes, shift;
-};
-
-sub exclude_tag($;$$$$$$$) {
-    @exclude_tags{map uc @_} = (undef) x @_;
-}
-
-sub cutoff($) {
-    $cutoff = time - 24*3600*shift;
-}
+#my (@collect,
+#    %exclude_tags,
+#    @reject,
+#    %found,
+#    @preferred,
+#    $output_directory,
+#    $minimum,
+#    @sizes
+#);
 
 sub collect_image_information {
     my @res;
@@ -261,6 +233,8 @@ sub collect_image_information {
     };
     @res
 }
+
+=for later
 
 # XXX The DSL should be a bit more formally specified by listing
 #     its keywords and the parameters it takes, and the handlers,
@@ -316,11 +290,13 @@ output 'OUTPUT';
 #               /etc/imagestream/mysite.new
 # theme '~/my.override'
 
-my @images = collect_images(\@collect,\@reject);
-%found = map { $_ => $_ } @images;
+=cut
+
+my @images = collect_images($cfg->{collect},$cfg->{reject} );
+my %found = map { $_ => $_ } @images;
 
 # Weed out the duplicates
-for (@preferred) {
+for (@{ $cfg->{preferred}}) {
     my ($better, $worse) = @$_;
     for (grep {/$better/i} (keys %found)) {
         my ($image) = $_;
@@ -335,25 +311,27 @@ for (@preferred) {
 @images = sort { $b->{mtime} <=> $a->{mtime} }
           collect_image_information( values %found );
 
+my @selected;
+
 # To reduce IO, we only read the metadata of images that pass the
 # other criteria. This prevents us from using grep ...
 while (@images
-         and ($images[0]->{mtime} < $cutoff or $minimum < @selected)) {
+         and ($images[0]->{mtime} < $cfg->{cutoff} or $cfg->{minimum} < @selected)) {
     my $info = fetch_image_metadata( shift @images );
     
-    if (! grep { exists $exclude_tags{uc $_} } @{ $info->{exif}->{KeyWords} }) {
+    if (! grep { exists $cfg->{ exclude_tag }->{uc $_} } @{ $info->{exif}->{KeyWords} }) {
         push @selected, $info;
     } else {
         # XXX verbose: output rejection status
     }
 }
 
-create_thumbnails($output_directory,[160,640],@selected);
+create_thumbnails($cfg->{ output },$cfg->{ size },@selected);
 
 # XXX Ideally, we should check whether the new file is different
 # from the old file before creating a new timestamp
 #create_rss($output_directory, @selected);
-create_atom($output_directory, @selected);
+#create_atom($output_directory, @selected);
 #create_html($output_directory, @selected);
 
 # XXX upload the complete output directory
