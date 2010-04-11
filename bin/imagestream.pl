@@ -241,7 +241,7 @@ sub size($) {
 };
 
 sub exclude_tag($;$$$$$$$) {
-    @exclude_tags{@_} = (undef) x @_;
+    @exclude_tags{map uc @_} = (undef) x @_;
 }
 
 sub cutoff($) {
@@ -341,7 +341,7 @@ while (@images
          and ($images[0]->{mtime} < $cutoff or $minimum < @selected)) {
     my $info = fetch_image_metadata( shift @images );
     
-    if (! grep { exists $exclude_tags{$_} } @{ $info->{exif}->{KeyWords} }) {
+    if (! grep { exists $exclude_tags{uc $_} } @{ $info->{exif}->{KeyWords} }) {
         push @selected, $info;
     } else {
         # XXX verbose: output rejection status
