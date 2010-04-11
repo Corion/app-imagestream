@@ -48,6 +48,10 @@ Have a template directory
 
 =item *
 
+Config::Gitlike configuration instead or in addition to the DSL
+
+=item *
+
 Have HTML themes in C<.tar.gz> files
 
 =item *
