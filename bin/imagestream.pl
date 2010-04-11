@@ -3,7 +3,7 @@ use strict;
 use Path::Class;
 use File::Find;
 use List::MoreUtils qw(zip);
-use Decision::Depends;
+#use Decision::Depends;
 use Imager;
 use Image::ExifTool qw(:Public);
 use Image::Thumbnail;
@@ -17,7 +17,7 @@ GetOptions(
 
 $inkscape ||= 'C:\\Programme\\Inkscape\\inkscape.exe';
 
-Decision::Depends::Configure({ Force => $force });
+#Decision::Depends::Configure({ Force => $force });
 
 sub collect_images {
     my ($search,$reject) = @_;
@@ -247,6 +247,10 @@ sub exclude_tag($;$$$$$$$) {
     @exclude_tags{@_} = (undef) x @_;
 }
 
+sub cutoff($) {
+    $cutoff = time - 24*3600*shift;
+}
+
 sub collect_image_information {
     my @res;
     my @stat_header = (qw(dev ino mode nlink uid gid rdev size atime mtime ctime blksize blocks));
@@ -261,6 +265,14 @@ sub collect_image_information {
     @res
 }
 
+# XXX The DSL should be a bit more formally specified by listing
+#     its keywords and the parameters it takes, and the handlers,
+#     instead of being eval()
+#     This will help once a GUI is generated instead of just being
+#     a command line app.
+# Maybe Parse::Yapp or Regexp::Grammar are suitable tools to 
+# specify/parse that config, or maybe we just want to use Config::GitLike
+
 reject '\b.git\b';
 reject '\bThumbs.db$';
 
@@ -270,7 +282,10 @@ collect '//aliens/corion/backup/Photos/20100305 - Frankfurt Industrie Osthafen';
 collect 'C:/Dokumente und Einstellungen/corion/Eigene Dateien/Eigene Bilder/Martin-svg';
 collect 'C:/Dokumente und Einstellungen/Corion/Eigene Dateien/Eigene Bilder/20090826 - Kreuzfahrt Geiranger';
 collect 'C:/Dokumente und Einstellungen/Corion/Eigene Dateien/Eigene Bilder/Circus-Circus';
+
 minimum 100;
+
+cutoff 3; # days
 
 exclude_tag 'private';
 
@@ -305,7 +320,6 @@ for (@preferred) {
 
 # To reduce IO, we only read the metadata of images that pass the
 # other criteria. This prevents us from using grep ...
-my $cutoff = time - 3 * 24 * 3600; # XXX make cutoff configurable
 while (@images
          and ($images[0]->{mtime} < $cutoff or $minimum < @selected)) {
     my $info = fetch_image_metadata( shift @images );
