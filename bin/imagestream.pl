@@ -3,7 +3,7 @@ use strict;
 use Path::Class;
 use File::Find;
 use List::MoreUtils qw(zip);
-#use Decision::Depends;
+use Decision::Depends;
 use Imager;
 use Image::ExifTool qw(:Public);
 use Image::Thumbnail;
@@ -17,7 +17,7 @@ GetOptions(
 
 $inkscape ||= 'C:\\Programme\\Inkscape\\inkscape.exe';
 
-#Decision::Depends::Configure({ Force => $force });
+Decision::Depends::Configure({ Force => $force });
 
 sub collect_images {
     my ($search,$reject) = @_;
@@ -200,9 +200,6 @@ sub create_thumbnails {
     };
 }
 
-sub output_image_list {
-}
-
 sub read_config {
 }
 
@@ -272,6 +269,9 @@ sub collect_image_information {
 #     a command line app.
 # Maybe Parse::Yapp or Regexp::Grammar are suitable tools to 
 # specify/parse that config, or maybe we just want to use Config::GitLike
+# Even if a config file is just a do{} block, we might want to create
+# these subroutines only locally, as not to pollute the rest of the
+# program with the keywords.
 
 reject '\b.git\b';
 reject '\bThumbs.db$';
@@ -294,10 +294,27 @@ prefer '.cr2' => '.jpg';
 prefer '.svg' => '.jpg';
 prefer '.svg' => '.png';
 
+# XXX Would we ever want to have more than two sizes, small and large?
 size 160;
 size 640;
 
 output 'OUTPUT';
+
+# We also need to declare the external URLs:
+# base_url 'http://datenzoo.de/imagestream';
+# base_file 'images'
+# generate 'html','atom','rss'; # the default
+# Should generate http://datenzoo.de/imagestream/images.html ,
+# images.atom and images.rss
+
+# theme 'mysite.tar.gz'
+# theme 'mysite.new'
+# will look for $(dirname config-file)/mysite.new/
+#               $()/mysite.new.tar 
+#               $()/mysite.new.tar.gz
+#               $rcdir/mysite.new
+#               /etc/imagestream/mysite.new
+# theme '~/my.override'
 
 my @images = collect_images(\@collect,\@reject);
 %found = map { $_ => $_ } @images;
@@ -332,6 +349,11 @@ while (@images
 }
 
 create_thumbnails($output_directory,[160,640],@selected);
-output_image_list();
 
-# XXX upload
+# XXX Ideally, we should check whether the new file is different
+# from the old file before creating a new timestamp
+#create_rss($output_directory, @selected);
+create_atom($output_directory, @selected);
+#create_html($output_directory, @selected);
+
+# XXX upload the complete output directory
