@@ -2,7 +2,6 @@
 use strict;
 use Path::Class;
 use File::Find;
-#use Memoize;
 use List::MoreUtils qw(zip);
 use Decision::Depends;
 use Imager;
@@ -117,28 +116,75 @@ sub extract_thumbnail_svg {
         or warn "Couldn't remove temporary file '$tempfile'\n";
 };
 
-sub create_thumbnail {
-    # XXX Should we use only squares and cut?
-    # Or is this a problem of the CSS / Slideshow / Templates?
-    my ($info,$target,$sizes) = @_;
-    $sizes ||= [160];
-    
-    # First see whether Image::ExifTool can extract a thumbnail for us
-    # We should also rotate the thumbnail according to the Exif rotation!
-    my $img_info = ImageInfo( $info->{file}->stringify, ['PreviewImage','KeyWords','Orientation'], { List => 1 } );
+sub fetch_image_metadata {
+    my ($info,$target) = @_;
+
+    my $img_info = ImageInfo(
+        $info->{file}->stringify,
+        ['PreviewImage','KeyWords','Orientation'],
+        { List => 1 }
+    );
+    $info->{exif} = $img_info;
 
     # XXX Extension-based filetype handling isn't all that hot, but easier
     #     than pulling in File::MMagic or File::MimeMagic etc.
     (my $extension = lc $info->{file}->stringify) =~ s/.*\.//;
+    $info->{extension} = $extension;
 
     my $rotate = $rotation{ $img_info->{Orientation} || '' };
     warn "Unknown image orientation '$img_info->{Orientation}'"
         unless defined $rotate;
+    $info->{rotate} = $rotate;
+    
+    $info
+}
+
+sub generate_thumbnail_name {
+    my ($info,$target) = @_;
+    $target =~ /(.*)\.\w+$/;
+    $target = $1;
+    my $extension = $info->{extension};
+
+    my @tags = @{ $info->{exif}->{KeyWords} || []};
+    my $dir = $info->{file}->dir->relative($info->{file}->dir->parent);
+    push @tags, $dir;
+    warn $dir;
+    
+    # make uri-sane filenames
+    # XXX Maybe use whatever SocialText used to create titles
+    # XXX If I can't find this, make this into its own module
+    my $tags = join "_", @tags;
+    $tags =~ s/['"]//gi;
+    $tags =~ s/[.^a-zA-Z0-9-]/ /gi;
+    $tags =~ s/\s+/_/g;
+    
+    my @parts = qw(file size tags extension);
+    my %parts = (
+        file => $target,
+        extension => $extension,
+        size => $size,
+        tags => $tags,
+    );
+    $target = join "_", @parts{ @parts };
+        
+    # Clean up the end result
+    # This fixes foo_.extension to foo.extension
+    $target =~ s/_([\W])/$1/g;
+
+    $info->{target} = $target;
+    $target
+}
+
+sub create_thumbnail {
+    # XXX Should we use only squares and cut?
+    # Or is this just a problem of the CSS / Slideshow / Templates?
+    my ($info,$target,$sizes) = @_;
+    $sizes ||= [160];
     
     # If we can find an embedded preview image, use that:
-    if ($img_info and $img_info->{PreviewImage}) {
-        create_thumbnail_sizes(\$img_info->{PreviewImage},$target,$sizes);
-    } elsif (my $handler = $thumbnail_handlers{ $extension }) {
+    if ($info->{exif} and $info->{exif}->{PreviewImage}) {
+        create_thumbnail_sizes(\($info->{exif}->{PreviewImage}),$target,$sizes);
+    } elsif (my $handler = $thumbnail_handlers{ $info->{extension} }) {
         $handler->($info,$target,$sizes);
     }
 }
@@ -148,9 +194,7 @@ sub create_thumbnails {
     for my $info (@files) {
         my $target = $info->{file}->basename;
         
-        # XXX Better name generation wanted here, for clashing filenames
-        #     in different directories
-        $target =~ s/\.(\w+)$/_%03d_t.jpg/i;
+        $target = generate_thumbnail_name($info,$target);
         $target = file( $output_directory, $target );
         create_thumbnail($info,$target,$size);
     };
@@ -164,7 +208,15 @@ sub read_config {
 
 read_config();
 
-my (@collect,@reject,%found,@preferred, $output_directory,$minimum,@sizes);
+my (@collect,
+    %exclude_tags,
+    @reject,
+    %found,
+    @preferred,
+    $output_directory,
+    $minimum,
+    @sizes
+);
 
 # Configuration DSL
 sub collect($) {
@@ -191,6 +243,10 @@ sub size($) {
     push @sizes, shift;
 };
 
+sub exclude_tag($;$$$$$$$) {
+    @exclude_tags{@_} = (undef) x @_;
+}
+
 sub collect_image_information {
     my @res;
     my @stat_header = (qw(dev ino mode nlink uid gid rdev size atime mtime ctime blksize blocks));
@@ -212,11 +268,13 @@ reject '\bThumbs.db$';
 
 collect '//aliens/corion/backup/Photos/20100305 - Frankfurt Industrie Osthafen';
 collect 'C:/Dokumente und Einstellungen/corion/Eigene Dateien/Eigene Bilder/Martin-svg';
+collect 'C:/Dokumente und Einstellungen/Corion/Eigene Dateien/Eigene Bilder/20090826 - Kreuzfahrt Geiranger';
+collect 'C:/Dokumente und Einstellungen/Corion/Eigene Dateien/Eigene Bilder/Circus-Circus';
 minimum 100;
 
+exclude_tag 'private';
+
 # If we have both, .CR2 and .JPG, prefer .CR2
-# This should become configurable
-# Maybe this "DSL" is the configuration
 prefer '.cr2' => '.jpg';
 prefer '.svg' => '.jpg';
 prefer '.svg' => '.png';
@@ -240,21 +298,24 @@ for (@preferred) {
     };
 };
 
-#print "$_\n" for sort keys %found;
-
-# XXX Sort the images by timestamp of last modification (descending)
+# To sort the images by timestamp of last modification (descending),
+# we need to fetch the statistics for all files...
 @images = sort { $b->{mtime} <=> $a->{mtime} }
           collect_image_information( values %found );
 
-my $cutoff = time - 3 * 24 * 3600;
-my @selected = grep { $_->{mtime} > $cutoff } @images;
-if (@selected < $minimum) {
-    @selected = grep {defined} @images[0..$minimum-1];
-};
-
-#print "$_->{file}\n" for @selected;
-
-# XXX Generate the names for the output in output_directory
+# To reduce IO, we only read the metadata of images that pass the
+# other criteria. This prevents us from using grep ...
+my $cutoff = time - 3 * 24 * 3600; # XXX make cutoff configurable
+while (@images
+         and ($images[0]->{mtime} < $cutoff or $minimum < @selected)) {
+    my $info = fetch_image_metadata( shift @images );
+    
+    if (! grep { exists $exclude_tags{$_} } @{ $info->{exif}->{KeyWords} }) {
+        push @selected, $info;
+    } else {
+        # XXX verbose: output rejection status
+    }
+}
 
 create_thumbnails($output_directory,[160,640],@selected);
 output_image_list();
