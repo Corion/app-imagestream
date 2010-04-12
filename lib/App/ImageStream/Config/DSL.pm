@@ -66,41 +66,4 @@ sub parse_config_file {
     $package->parse_config($spec,$content,$fn);
 };
 
-=for later
-
-# Configuration DSL
-sub collect($) {
-    push @collect, @_;
-};
-
-sub reject($) {
-    push @reject, @_;
-};
-
-sub prefer($$) {
-    push @preferred, [ $_[0], $_[1] ];
-};
-
-sub output($) {
-    $output_directory = shift;
-};
-
-sub minimum($) {
-    $minimum = shift;
-};
-
-sub size($) {
-    push @sizes, shift;
-};
-
-sub exclude_tag($;$$$$$$$) {
-    @exclude_tags{map uc @_} = (undef) x @_;
-}
-
-sub cutoff($) {
-    $cutoff = time - 24*3600*shift;
-}
-
-=cut
-
 1;
