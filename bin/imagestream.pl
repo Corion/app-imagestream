@@ -31,6 +31,7 @@ sub collect_images {
         for (@$reject) {
             if ($File::Find::name =~ /$_/) {
                 $File::Find::prune = 1;
+                #warn "Rejecting '$File::Find::name' ($_)";
                 last;
             }
         }
@@ -50,8 +51,6 @@ use vars qw'%rotation %thumbnail_handlers';
     'Rotate 270 CW'       => 270,
 );
 
-my $dec = Decision::Depends->new();
-
 %thumbnail_handlers = (
     'svg'  => \&extract_thumbnail_svg,
     'svgz' => \&extract_thumbnail_svg,
@@ -61,12 +60,19 @@ sub create_thumbnail_from_blob {
     my ($info,$thumbname,$rotate,$size,$i) = @_;
     # XXX We're Imager-specific here
     if (! $i) {
+        $i = Imager->new;
         if ($info->{blob}) {
-            $i = Imager->new->read(data => ${$info->{blob}});
+            $i = $i->read(data => ${$info->{blob}}, type => $info->{blob_type}, )
+                or warn sprintf "%s: %s", $info->{file}, $i->errstr;
         } else {
-            $i = Imager->new->read(file => "$info->{file}");
+            $i = $i->read(file => "$info->{file}")
+                or warn sprintf "%s: %s", $info->{file}, $i->errstr;
         };
-        $i = $i->rotate(degrees => $rotate) if $rotate;
+        if ($i) {
+            $i = $i->rotate(degrees => $rotate) if $rotate;
+        } else {
+            return
+        }
     };
     
     my $t = Image::Thumbnail->new(
@@ -82,12 +88,12 @@ sub create_thumbnail_from_blob {
 }
 
 sub create_thumbnail_sizes {
-    my ($info,$target,$rotate,$sizes) = @_;
+    my ($info,$output_directory,$rotate,$sizes) = @_;
     my $i;
     for my $s (@$sizes) {
-        my $thumbname = sprintf($target, $s);
+        my $thumbname = file( $output_directory, generate_thumbnail_name( $info, $s ));
         
-        if (test_dep( -target => $thumbname, -depend => $info->{file} )) {
+        if (test_dep( -target => "$thumbname", -depend => "$info->{file}" )) {
             $i = create_thumbnail_from_blob($info,$thumbname,$rotate,$s,$i);
         } else {
             #warn "$thumbname is newer than $info->{file}->basename";
@@ -95,9 +101,10 @@ sub create_thumbnail_sizes {
     }
 };
 
+# XXX We shouldn't need to render the SVG just to potentially create thumbnails
 sub extract_thumbnail_svg {
     # create a temporary PNG image from which we'll subsequently
-    my ($info,$target,$sizes,$force) = @_;
+    my ($info,$output_directory,$sizes,$force) = @_;
     my ($fh, $tempfile) = tempfile();
     close $fh; # we're on Windows
     my $source = $info->{file};
@@ -107,29 +114,38 @@ sub extract_thumbnail_svg {
         or warn "Couldn't run [$cmd]: $!/$?";
     
     # create the thumbnail(s)
-    my $blob = do {
-        local $/;
-        open my $fh, '<', $tempfile
-            or die "Couldn't read '$tempfile': $!";
-        binmode $fh;
-        <$fh>;
-    };
+    # XXX Class::Path doesn't support binmode on ->slurp :-(
+    my $blob = do { 
+                    local $/;
+                    open my $fh, $tempfile
+                        or warn "Couldn't read '$tempfile'";
+                    binmode $fh;
+                    <$fh>
+                  };
     $info->{blob} = \$blob;
-    create_thumbnail_sizes($info,$target,0,$sizes);
-    
+    $info->{blob_type} = 'png';
     unlink $tempfile
         or warn "Couldn't remove temporary file '$tempfile'\n";
+
+    create_thumbnail_sizes($info,$output_directory,0,$sizes);    
 };
 
 sub fetch_image_metadata {
-    my ($info,$target) = @_;
+    my ($info) = @_;
 
+    # XXX We should be lighter here and only read the PreviewImage
+    #     if we need it to recreate the thumbnail
     my $img_info = ImageInfo(
         $info->{file}->stringify,
         ['PreviewImage','KeyWords','Orientation'],
         { List => 1 }
     );
     $info->{exif} = $img_info;
+    
+    if ($info->{exif} and $info->{exif}->{PreviewImage}) {
+        $info->{blob_type} = 'jpeg';
+        $info->{blob} = $info->{exif}->{PreviewImage};
+    };
 
     # XXX Extension-based filetype handling isn't all that hot, but easier
     #     than pulling in File::MMagic or File::MimeMagic etc.
@@ -137,7 +153,7 @@ sub fetch_image_metadata {
     $info->{extension} = $extension;
 
     my $rotate = $rotation{ $img_info->{Orientation} || '' };
-    warn "Unknown image orientation '$img_info->{Orientation}'"
+    warn "$info->{file}: Unknown image orientation '$img_info->{Orientation}'"
         unless defined $rotate;
     $info->{rotate} = $rotate;
     
@@ -145,63 +161,61 @@ sub fetch_image_metadata {
 }
 
 sub generate_thumbnail_name {
-    my ($info,$size, $target) = @_;
-    $target =~ /(.*)\.\w+$/;
+    my ($info,$size) = @_;
+    (my $target = $info->{file}->basename) =~ /(.*)\.\w+$/;
     $target = $1;
-    my $extension = $info->{extension};
+    my $extension = $info->{blob_type} || $info->{extension};
 
     my @tags = @{ $info->{exif}->{KeyWords} || []};
     my $dir = $info->{file}->dir->relative($info->{file}->dir->parent);
-    push @tags, $dir;
-    warn $dir;
+    push @tags, "$dir";
     
     # make uri-sane filenames
     # XXX Maybe use whatever SocialText used to create titles
     # XXX If I can't find this, make this into its own module
     my $tags = join "_", @tags;
     $tags =~ s/['"]//gi;
-    $tags =~ s/[.^a-zA-Z0-9-]/ /gi;
+    $tags =~ s/[^a-zA-Z0-9.-]/ /gi;
     $tags =~ s/\s+/_/g;
+    $tags =~ s/_-_/-/g;
     
-    my @parts = qw(file size tags extension);
+    my @parts = qw(file size tags);
     my %parts = (
         file => $target,
-        extension => $extension,
         size => sprintf( '%04d', $size ),
         tags => $tags,
     );
-    $target = join "_", @parts{ @parts };
-        
+    $target = join( "_", @parts{ @parts }) . "." . $extension;
+
     # Clean up the end result
     # This fixes foo_.extension to foo.extension
-    $target =~ s/_([\W])/$1/g;
 
-    $info->{target} = $target;
+    $target =~ s/_+/_/g;
+    $target =~ s/_+([\W])/$1/g;
+
     $target
 }
 
 sub create_thumbnail {
     # XXX Should we use only squares and cut?
     # Or is this just a problem of the CSS / Slideshow / Templates?
-    my ($info,$target,$sizes) = @_;
+    my ($info,$output_directory,$sizes) = @_;
     $sizes ||= [160];
     
-    # If we can find an embedded preview image, use that:
-    if ($info->{exif} and $info->{exif}->{PreviewImage}) {
-        create_thumbnail_sizes(\($info->{exif}->{PreviewImage}),$target,$sizes);
-    } elsif (my $handler = $thumbnail_handlers{ $info->{extension} }) {
-        $handler->($info,$target,$sizes);
+    if (my $handler = $thumbnail_handlers{ $info->{extension} }) {
+        #warn $info->{file} . "(svg)";
+        $handler->($info,$output_directory,$sizes);
+    } else {
+        #warn $info->{file} . "(file)";
+        create_thumbnail_sizes($info,$output_directory,$info->{rotate},$sizes);
     }
 }
 
 sub create_thumbnails {
-    my ($output_directory, $size, @files) = @_;
+    my ($output_directory, $sizes, @files) = @_;
     for my $info (@files) {
-        my $target = $info->{file}->basename;
-        
-        $target = generate_thumbnail_name($info,$size,$target);
-        $target = file( $output_directory, $target );
-        create_thumbnail($info,$target,$size);
+        #my $target = $info->{file}->basename;
+        create_thumbnail($info,$output_directory,$sizes);
     };
 }
 
@@ -209,8 +223,6 @@ my $cfg = App::ImageStream::Config::DSL->parse_config_file(
     \%App::ImageStream::Config::Items::items,
     $config,
 );
-
-#warn Dumper $cfg;
 
 sub collect_image_information {
     my @res;
@@ -288,13 +300,13 @@ my @images = collect_images($cfg->{collect},$cfg->{reject} );
 my %found = map { $_ => $_ } @images;
 
 # Weed out the duplicates
-for (@{ $cfg->{preferred}}) {
+for (@{ $cfg->{prefer}}) {
     my ($better, $worse) = @$_;
     for (grep {/$better/i} (keys %found)) {
         my ($image) = $_;
         $image =~ s/$better//i;
-        delete $found{ $image . lc $worse };
-        delete $found{ $image . uc $worse };
+        my $removed = delete $found{ $image . lc $worse };
+        $removed = delete $found{ $image . uc $worse };
     };
 };
 
@@ -308,7 +320,7 @@ my @selected;
 # To reduce IO, we only read the metadata of images that pass the
 # other criteria. This prevents us from using grep ...
 while (@images
-         and ($images[0]->{mtime} < $cfg->{cutoff} or $cfg->{minimum} < @selected)) {
+         and ($images[0]->{mtime} > $cfg->{cutoff} or $cfg->{minimum} < @selected)) {
     my $info = fetch_image_metadata( shift @images );
     
     if (! grep { exists $cfg->{ exclude_tag }->{uc $_} } @{ $info->{exif}->{KeyWords} }) {
@@ -318,7 +330,8 @@ while (@images
     }
 }
 
-create_thumbnails($cfg->{ output },$cfg->{ size },@selected);
+#warn $_->{file} for @selected;
+create_thumbnails(@{ $cfg->{ output } },$cfg->{ size },@selected);
 
 # XXX Ideally, we should check whether the new file is different
 # from the old file before creating a new timestamp
