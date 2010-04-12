@@ -142,6 +142,7 @@ Example:
                     or die "Malformed config item '$_'";
                 my ($name,$spec,$desc) = ($1,$2,$3);
                 my $count =()= ($spec =~ m/,/g);
+                $count++;
                 $name => {
                     name      => $name,
                     spec      => $spec,

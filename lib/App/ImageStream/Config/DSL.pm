@@ -14,6 +14,7 @@ sub parse_config {
     
     my $result = {};
     
+    my %handler;
     for my $item (values %$spec) {
         my $n = $item->{name};
         my $fetch;
@@ -27,13 +28,29 @@ sub parse_config {
         } else {
             $fetch = sub($;) { push @{ $result->{$n}}, [@_]; };
         };
-        no strict 'refs';
-        local *{$n} = $fetch;
+        $handler{$n} = $fetch;
     };
-    
-    my $ok = eval "package " . __PACKAGE__ . ";\n#line $config_source#1\n$config_data\n;1";
-    my $err = $@;
-    
+
+    my ($ok,$err);
+    {
+        my @handlers = keys %handler;
+        my $cfg_str = "package " . __PACKAGE__ . ";\n#line $config_source#1\n$config_data\n;1";
+        warn $cfg_str;
+
+        no strict 'refs';
+        
+        # We don't want to introduce another scope, as that will
+        # negate the effect of the local:
+        NEXT:
+            my $n = shift @handlers;
+            local *{$n} = $handler{ $n };
+            goto NEXT
+                if @handlers;
+        
+        $ok = eval $cfg_str;
+        $err = $@;
+    }
+
     if ($ok) {
         return $result
     } else {
@@ -45,7 +62,8 @@ sub parse_config {
 sub parse_config_file {
     my ($package,$spec,$fn) = @_;
     my $file = file($fn);
-    $package->parse_config($spec,$file->slurp,$fn);
+    my $content = $file->slurp;
+    $package->parse_config($spec,$content,$fn);
 };
 
 =for later
