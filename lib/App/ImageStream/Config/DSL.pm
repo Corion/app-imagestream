@@ -67,3 +67,11 @@ sub parse_config_file {
 };
 
 1;
+
+__END__
+
+=head1 SEE ALSO
+
+L<App::ImageStream::Config::Items> for the data structure
+
+=cut

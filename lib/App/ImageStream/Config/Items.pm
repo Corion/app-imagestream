@@ -15,6 +15,8 @@ internal name and the type and number of arguments.
       warn "Unknown config item '$item'";
   }
 
+Defaults are currently not specified.
+
 =cut
 
 use vars qw(%items $config_raw);
@@ -136,27 +138,26 @@ Example:
 
 =cut
 
+sub parse_pod_config {
+    map {
+        /^=head2 C<< (\w+) (.*) >>\s+(.*)$/ms
+            or die "Malformed config item '$_'";
+        my ($name,$spec,$desc) = ($1,$2,$3);
+        my $count =()= ($spec =~ m/,/g);
+        $count++;
+        $name => {
+            name      => $name,
+            spec      => $spec,
+            desc      => $desc,
+            arg_count => $count,
+        },
+    }
+    grep /^=head2/, 
+    split /(?==head2)/,
+    shift
+};
+
 # Parse the config items from the documentation
-%items = map {
-                /^=head2 C<< (\w+) (.*) >>\s+(.*)$/ms
-                    or die "Malformed config item '$_'";
-                my ($name,$spec,$desc) = ($1,$2,$3);
-                my $count =()= ($spec =~ m/,/g);
-                $count++;
-                $name => {
-                    name      => $name,
-                    spec      => $spec,
-                    desc      => $desc,
-                    arg_count => $count,
-                },
-            }
-            grep /^=head2/, 
-            split /(?==head2)/,
-            $config_raw;
-#warn $config_raw;
-
-#use Data::Dumper;
-#warn Dumper \%items;
-
+%items = parse_pod_config( $config_raw );
 
 1;
