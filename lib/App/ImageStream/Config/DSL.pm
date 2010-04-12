@@ -35,7 +35,7 @@ sub parse_config {
     {
         my @handlers = keys %handler;
         my $cfg_str = "package " . __PACKAGE__ . ";\n#line $config_source#1\n$config_data\n;1";
-        warn $cfg_str;
+        #warn $cfg_str;
 
         no strict 'refs';
         
