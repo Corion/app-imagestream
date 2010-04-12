@@ -48,7 +48,7 @@ use vars qw'%rotation %thumbnail_handlers';
     'Rotate 270 CW'       => 270,
 );
 
-#my $dec = Decision::Depends->new();
+my $dec = Decision::Depends->new();
 
 %thumbnail_handlers = (
     'svg'  => \&extract_thumbnail_svg,
