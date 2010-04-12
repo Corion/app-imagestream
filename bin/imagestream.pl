@@ -238,64 +238,6 @@ sub collect_image_information {
     @res
 }
 
-=for later
-
-# XXX The DSL should be a bit more formally specified by listing
-#     its keywords and the parameters it takes, and the handlers,
-#     instead of being eval()
-#     This will help once a GUI is generated instead of just being
-#     a command line app.
-# Maybe Parse::Yapp or Regexp::Grammar are suitable tools to 
-# specify/parse that config, or maybe we just want to use Config::GitLike
-# Even if a config file is just a do{} block, we might want to create
-# these subroutines only locally, as not to pollute the rest of the
-# program with the keywords.
-
-reject '\b.git\b';
-reject '\bThumbs.db$';
-
-# XXX We should recognize (image) file types
-
-collect '//aliens/corion/backup/Photos/20100305 - Frankfurt Industrie Osthafen';
-collect 'C:/Dokumente und Einstellungen/corion/Eigene Dateien/Eigene Bilder/Martin-svg';
-collect 'C:/Dokumente und Einstellungen/Corion/Eigene Dateien/Eigene Bilder/20090826 - Kreuzfahrt Geiranger';
-collect 'C:/Dokumente und Einstellungen/Corion/Eigene Dateien/Eigene Bilder/Circus-Circus';
-
-minimum 100;
-
-cutoff 3; # days
-
-exclude_tag 'private';
-
-# If we have both, .CR2 and .JPG, prefer .CR2
-prefer '.cr2' => '.jpg';
-prefer '.svg' => '.jpg';
-prefer '.svg' => '.png';
-
-# XXX Would we ever want to have more than two sizes, small and large?
-size 160;
-size 640;
-
-output 'OUTPUT';
-
-# We also need to declare the external URLs:
-# base_url 'http://datenzoo.de/imagestream';
-# base_file 'images'
-# generate 'html','atom','rss'; # the default
-# Should generate http://datenzoo.de/imagestream/images.html ,
-# images.atom and images.rss
-
-# theme 'mysite.tar.gz'
-# theme 'mysite.new'
-# will look for $(dirname config-file)/mysite.new/
-#               $()/mysite.new.tar 
-#               $()/mysite.new.tar.gz
-#               $rcdir/mysite.new
-#               /etc/imagestream/mysite.new
-# theme '~/my.override'
-
-=cut
-
 my @images = collect_images($cfg->{collect},$cfg->{reject} );
 my %found = map { $_ => $_ } @images;
 

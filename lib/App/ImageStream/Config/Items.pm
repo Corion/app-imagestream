@@ -11,7 +11,7 @@ This declares a list of configuration items together with their
 internal name and the type and number of arguments.
 
   my $item = parse_config_item();
-  if (not exists $App::ImageStream::Config::Items{$item}) {
+  if (not exists $App::ImageStream::Config::Items::item{$item}) {
       warn "Unknown config item '$item'";
   }
 
