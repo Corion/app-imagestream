@@ -15,10 +15,12 @@ use Data::Dumper;
 use Getopt::Long;
 GetOptions(
     'f|force' => \my $force,
+    'c|config' => \my $config,
     'i|inkscape' => \my $inkscape,
 );
 
 $inkscape ||= 'C:\\Programme\\Inkscape\\inkscape.exe';
+$config ||= 'imagestream.cfg';
 
 Decision::Depends::Configure({ Force => $force });
 
@@ -205,20 +207,10 @@ sub create_thumbnails {
 
 my $cfg = App::ImageStream::Config::DSL->parse_config_file(
     \%App::ImageStream::Config::Items::items,
-    'imagestream.cfg'
+    $config,
 );
 
-warn Dumper $cfg;
-
-#my (@collect,
-#    %exclude_tags,
-#    @reject,
-#    %found,
-#    @preferred,
-#    $output_directory,
-#    $minimum,
-#    @sizes
-#);
+#warn Dumper $cfg;
 
 sub collect_image_information {
     my @res;
