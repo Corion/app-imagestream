@@ -136,6 +136,33 @@ Example:
   prefer '.svg', '.png';
   prefer '.svg', '.jpg';
 
+=head2 C<< author NAME >>
+
+Name of the author
+
+This sets the author that is displayed for all images in the
+Atom and RSS feeds.
+
+Example:
+
+  author 'A. U. Thor';
+
+=head2 C<< base URL >>
+
+Base URL under which the gallery+feed can be reached
+
+Example:
+
+  base 'http://datenzoo.de/image_feed'
+
+=head2 C<< title NAME >>
+
+Title of your feed
+
+Example:
+
+  title 'All my pictures'
+
 =cut
 
 sub parse_pod_config {

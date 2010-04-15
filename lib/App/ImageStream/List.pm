@@ -22,11 +22,27 @@ from the old file.
 =cut
 
 sub create {
-    my ($type, $file,@items) = @_;
-    my $old = file($file)->slurp;
+    my ($type, $file, $config, @items) = @_;
+    my $old = '';
+    
+    $old = file($file)->slurp
+        if (-f $file);
+    
+    # XXX Make configurable
+    my $base_url = $config->{ base }->[0] || 'http://datenzoo.de/image_stream';
+    my $feed_url = "${base_url}/" . $file->basename;
+    my $feedinfo = {
+        title   => $config->{title}->[0] || 'My image feed',
+        link    => $base_url,
+        link    => { rel => 'self', href => $feed_url, },
+        author  => $config->{author}->[0] || 'A. U. Thor',
+        id      => $base_url,
+        base    => $base_url,
+        feed_url => "$base_url/" . file($file)->basename,
+    };
     
     my $generator = $types{$type};
-    my $new = $generator->generate(@items);
+    my $new = $generator->generate($feedinfo, @items);
     
     if ($old ne $new) {
         open my $out, '>', $file

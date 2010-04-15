@@ -7,10 +7,12 @@ use Decision::Depends;
 use Imager;
 use Image::ExifTool qw(:Public);
 use Image::Thumbnail;
+use Image::Info qw(image_info dim);
 use File::Temp qw( tempfile );
 use App::ImageStream::Config::Items;
 use App::ImageStream::Config::DSL;
-use Data::Dumper;
+use App::ImageStream::List;
+#use Data::Dumper;
 
 use Getopt::Long;
 GetOptions(
@@ -79,7 +81,7 @@ sub create_thumbnail_from_blob {
         module     => 'Imager',
         object     => $i,
         size       => $size,
-        quality    => 90,
+        quality    => 95,
         outputpath => $thumbname,
         create => 1,
     );
@@ -92,12 +94,22 @@ sub create_thumbnail_sizes {
     my $i;
     for my $s (@$sizes) {
         my $thumbname = file( $output_directory, generate_thumbnail_name( $info, $s ));
+        warn "$info->{file} generates empty thumb"
+            if $thumbname eq "";
         
         if (test_dep( -target => "$thumbname", -depend => "$info->{file}" )) {
             $i = create_thumbnail_from_blob($info,$thumbname,$rotate,$s,$i);
         } else {
             #warn "$thumbname is newer than $info->{file}->basename";
         }
+        
+        my $img = image_info("$thumbname");
+        my ($w,$h) = dim($img);
+        $info->{sizes}->{$s} = {
+            name => $thumbname,
+            width => $w,
+            height => $h,
+        };
     }
 };
 
@@ -137,7 +149,7 @@ sub fetch_image_metadata {
     #     if we need it to recreate the thumbnail
     my $img_info = ImageInfo(
         $info->{file}->stringify,
-        ['PreviewImage','KeyWords','Orientation'],
+        ['PreviewImage','KeyWords','Orientation','DateTimeOriginal'],
         { List => 1 }
     );
     $info->{exif} = $img_info;
@@ -146,11 +158,14 @@ sub fetch_image_metadata {
         $info->{blob_type} = 'jpeg';
         $info->{blob} = $info->{exif}->{PreviewImage};
     };
-
+    
     # XXX Extension-based filetype handling isn't all that hot, but easier
     #     than pulling in File::MMagic or File::MimeMagic etc.
     (my $extension = lc $info->{file}->stringify) =~ s/.*\.//;
     $info->{extension} = $extension;
+    $info->{mime_type} = $extension eq 'png' ? 'image/png'
+                       : $extension eq 'svg' ? 'image/png'
+                                             : 'image/jpeg';
 
     my $rotate = $rotation{ $img_info->{Orientation} || '' };
     warn "$info->{file}: Unknown image orientation '$img_info->{Orientation}'"
@@ -185,7 +200,7 @@ sub generate_thumbnail_name {
         size => sprintf( '%04d', $size ),
         tags => $tags,
     );
-    $target = join( "_", @parts{ @parts }) . "." . $extension;
+    $target = lc( join( "_", @parts{ @parts }) . "." . $extension );
 
     # Clean up the end result
     # This fixes foo_.extension to foo.extension
@@ -277,7 +292,7 @@ create_thumbnails(@{ $cfg->{ output } },$cfg->{ size },@selected);
 
 # XXX Ideally, we should check whether the new file is different
 # from the old file before creating a new timestamp
-#create_rss($output_directory, @selected);
+App::ImageStream::List::create(atom => file( @{ $cfg->{ output } }, 'imagestream.atom'), $cfg, @selected);
 #create_atom($output_directory, @selected);
 #create_html($output_directory, @selected);
 
