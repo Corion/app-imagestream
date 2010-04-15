@@ -8,11 +8,14 @@ use Imager;
 use Image::ExifTool qw(:Public);
 use Image::Thumbnail;
 use Image::Info qw(image_info dim);
+use POSIX qw(strftime);
 use File::Temp qw( tempfile );
 use App::ImageStream::Config::Items;
 use App::ImageStream::Config::DSL;
 use App::ImageStream::List;
 #use Data::Dumper;
+
+${^WIN32_SLOPPY_STAT} = 1;
 
 use Getopt::Long;
 GetOptions(
@@ -50,6 +53,7 @@ use vars qw'%rotation %thumbnail_handlers';
 %rotation = (
     ''                    => 0,
     'Horizontal (normal)' => 0,
+    'Rotate 90 CW'        => 90,
     'Rotate 270 CW'       => 270,
 );
 
@@ -67,8 +71,12 @@ sub create_thumbnail_from_blob {
             $i = $i->read(data => ${$info->{blob}}, type => $info->{blob_type}, )
                 or warn sprintf "%s: %s", $info->{file}, $i->errstr;
         } else {
-            $i = $i->read(file => "$info->{file}")
+            my $t = $i->read(file => "$info->{file}")
                 or warn sprintf "%s: %s", $info->{file}, $i->errstr;
+            if (! $t) {
+                return
+            }
+            $i = $t;
         };
         if ($i) {
             $i = $i->rotate(degrees => $rotate) if $rotate;
@@ -167,6 +175,9 @@ sub fetch_image_metadata {
                        : $extension eq 'svg' ? 'image/png'
                                              : 'image/jpeg';
 
+    $info->{date_taken} = strftime '%Y-%m-%dT%H:%M:%SZ',
+                              gmtime( $info->{mtime} );
+
     my $rotate = $rotation{ $img_info->{Orientation} || '' };
     warn "$info->{file}: Unknown image orientation '$img_info->{Orientation}'"
         unless defined $rotate;
@@ -184,6 +195,7 @@ sub generate_thumbnail_name {
     my @tags = @{ $info->{exif}->{KeyWords} || []};
     my $dir = $info->{file}->dir->relative($info->{file}->dir->parent);
     push @tags, "$dir";
+    $info->{tags} = \@tags;
     
     # make uri-sane filenames
     # XXX Maybe use whatever SocialText used to create titles
@@ -229,8 +241,8 @@ sub create_thumbnail {
 sub create_thumbnails {
     my ($output_directory, $sizes, @files) = @_;
     for my $info (@files) {
-        #my $target = $info->{file}->basename;
         create_thumbnail($info,$output_directory,$sizes);
+        delete $info->{blob};
     };
 }
 
@@ -276,19 +288,31 @@ my @selected;
 
 # To reduce IO, we only read the metadata of images that pass the
 # other criteria. This prevents us from using grep ...
+warn sprintf "Filtering %d images\n", scalar @images;
+my $cutoff = time() - $cfg->{cutoff}->[0] * 24 * 3600;
+warn $cutoff;
+warn time - $cutoff;
+warn $cfg->{minimum}->[0];
+warn $images[0]->{mtime} - $cutoff;
+my %exclude_tag = map { uc $_ => 1 } @{ $cfg->{exclude_tag} };
 while (@images
-         and ($images[0]->{mtime} > $cfg->{cutoff} or $cfg->{minimum} < @selected)) {
+         and ($images[0]->{mtime} > $cutoff or $cfg->{minimum}->[0] > @selected)) {
     my $info = fetch_image_metadata( shift @images );
     
-    if (! grep { exists $cfg->{ exclude_tag }->{uc $_} } @{ $info->{exif}->{KeyWords} }) {
+    if (! grep { exists $exclude_tag{uc $_} } @{ $info->{exif}->{KeyWords} }) {
         push @selected, $info;
+
+        # Create thumbnail directly instead of keeping the image preview in memory
+        create_thumbnails(@{ $cfg->{ output } },$cfg->{ size },$info);
+        
+        print scalar @selected, "\n";
     } else {
         # XXX verbose: output rejection status
     }
 }
 
 #warn $_->{file} for @selected;
-create_thumbnails(@{ $cfg->{ output } },$cfg->{ size },@selected);
+#warn "Creating thumbnails";
 
 # XXX Ideally, we should check whether the new file is different
 # from the old file before creating a new timestamp
