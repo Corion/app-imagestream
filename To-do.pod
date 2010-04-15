@@ -40,11 +40,19 @@ Set thumbnail size
 
 Have a theme directory
 
+=item *
+
+Make the image information into an object
+
 =back
 
 =head1 Feature list for version 0.02
 
 =over 4
+
+=item *
+
+Add L<Progress::Indicator> for console progress
 
 =item *
 
