@@ -66,7 +66,9 @@ sub create_thumbnail_sizes {
         if (test_dep( -target => "$thumbname", -depend => "$info->{file}" )) {
             $i = $info->create_thumbnail($thumbname,$rotate,$s,$i);
         } else {
-            #warn "$thumbname is newer than $info->{file}->basename";
+            #warn sprintf "%s is newer than %s" ,
+            #    $thumbname,
+            #    $info->{file}->basename;
             $info->set_thumbnail_info($thumbname,$s);
         }
     }
