@@ -172,4 +172,15 @@ sub thumbnail_name {
     $target
 }
 
+sub title {
+    my ($self) = @_;
+    $self->{title} || $self->{file}->basename;
+};
+
+sub author {
+    my ($self) = @_;
+    $self->{author}
+};
+
+
 1;
