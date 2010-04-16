@@ -39,7 +39,7 @@ sub generate {
                           $base_url,
                           $image->{sizes}->{160}->{name}->basename
                         ;
-        my $title = $image->{title} || $image->{file}->basename;
+        my $title = $image->title;
         my $html = <<HTML; # encode_entities(<<HTML);
 <p>$info->{author} hat ein Bild ver&ouml;ffentlicht:</p>
 <p><a href="$url_large" title="$title"><img src="$url_thumb" width="$image->{sizes}->{160}->{width}" height="$image->{sizes}->{160}->{height}" alt="$title" /></a></p>
