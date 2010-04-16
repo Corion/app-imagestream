@@ -42,7 +42,7 @@ Have a theme directory
 
 =item *
 
-Make the image information into an object
+Make the image information into an object (done)
 
 =back
 

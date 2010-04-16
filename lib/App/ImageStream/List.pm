@@ -1,6 +1,7 @@
 package App::ImageStream::List;
 use strict;
 use App::ImageStream::List::Atom;
+use App::ImageStream::List::RSS;
 use Path::Class;
 
 use vars qw($VERSION);
