@@ -32,6 +32,10 @@ Generate thumbnails (via L<Image::Thumbnail> and L<Imager>)
 
 Thumbnail list as RSS+Atom+HTML/Slideshow/Timeline
 
+=item *
+
+Find out how to render HTML in RSS
+
 =item * (done)
 
 Set thumbnail size
@@ -53,6 +57,10 @@ Make the image information into an object (done)
 =item *
 
 Add L<Progress::Indicator> for console progress
+
+=item *
+
+Only render SVG to PNG when needed, not always
 
 =item *
 
