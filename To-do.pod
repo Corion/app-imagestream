@@ -106,4 +106,36 @@ Have .tar and .tar.gz and .zip as theme formats
 Have a directory cascade mechanism to merge/inherit from themes
 (without dependency management, mind you)
 
+=item *
+
+Make the configuration cascade include the command line
+
+Precedence (highest to lowest):
+
+  command line
+  directory config file / -f
+  ~/config
+  /etc/config
+
 =back
+
+=head1 Nice-to-have feature list
+
+=over 4
+
+=item *
+
+Have a "regen-feed" option that just looks at the thumbnail
+files and generates RSS+Atom+HTML from it
+
+=item *
+
+Have a local "webserver" to do a trial-run of the RSS/Atom/HTML feed
+
+=item *
+
+Factor out cascade into config-cascade and file-cascade
+
+=back
+
+=cut
