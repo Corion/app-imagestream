@@ -32,6 +32,8 @@ sub create {
     # XXX Make configurable
     my $base_url = $config->{ base }->[0] || 'http://datenzoo.de/image_stream';
     my $feed_url = "${base_url}/" . $file->basename;
+    my $updated  = strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
+    
     my $feedinfo = {
         title   => $config->{title}->[0] || 'My image feed',
         link    => $base_url,
@@ -40,6 +42,7 @@ sub create {
         id      => $base_url,
         base    => $base_url,
         feed_url => "$base_url/" . file($file)->basename,
+        updated => $updated,
     };
     
     my $generator = $types{$type};

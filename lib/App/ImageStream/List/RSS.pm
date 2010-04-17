@@ -1,5 +1,6 @@
 package App::ImageStream::List::RSS;
 use XML::RSS::SimpleGen ();
+use HTML::Entities qw(encode_entities);
 use strict;
 use vars qw($VERSION);
 $VERSION = '0.01';
@@ -26,7 +27,7 @@ sub generate {
                         ;
         my $title = $item->title;
         my $author = $item->author || $stream_author;
-        my $html = <<HTML; # encode_entities(<<HTML);
+        my $html = encode_entities(<<HTML);
 $author hat ein Bild ver&ouml;ffentlicht:
 <a href="$url_large" title="$title"><img src="$url_thumb" width="$item->{sizes}->{160}->{width}" height="$item->{sizes}->{160}->{height}" alt="$title" /></a>
 HTML

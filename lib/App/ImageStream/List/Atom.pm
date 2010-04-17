@@ -15,7 +15,7 @@ sub generate {
     
     # XXX This should be done twice, once for $old, once for $new,
     #     or with a s///g to match the two up.
-    my $updated  = strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
+    my $updated  = $info->{updated} || strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
     
     #use Data::Dumper;
     #warn Dumper $info;
