@@ -64,6 +64,7 @@ sub create_thumbnail_sizes {
             if $thumbname eq "";
         
         if (test_dep( -target => "$thumbname", -depend => "$info->{file}" )) {
+            # XXX The svg/Imager handler dispatch should go here
             $i = $info->create_thumbnail($thumbname,$rotate,$s,$i);
         } else {
             #warn sprintf "%s is newer than %s" ,
