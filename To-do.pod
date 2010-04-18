@@ -68,7 +68,7 @@ Config::Gitlike configuration instead or in addition to the DSL
 
 =item *
 
-Automated upload via WebDAV / SCP / tar+ssh+untar / copy
+Automated upload via WebDAV / SCP / tar+ssh+untar / copy / rsync
 
 =item *
 
@@ -78,6 +78,10 @@ Turn image conversion/thumbnail generation into plugins
 
 Have HTML themes in C<.tar.gz> files. If in doubt, extract
 a theme into a tempdir and use that tempdir as theme directory.
+
+=item *
+
+Turn image list into "topical" list grouped by date, like App::PhotoImport does
 
 =back
 
@@ -135,6 +139,11 @@ Have a local "webserver" to do a trial-run of the RSS/Atom/HTML feed
 =item *
 
 Factor out cascade into config-cascade and file-cascade
+
+=item *
+
+Optionally inline all assets (jQuery, CSS, feed icon?) into the generated
+HTML
 
 =back
 
