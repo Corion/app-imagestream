@@ -174,9 +174,11 @@ while (@images
 
 # XXX Ideally, we should check whether the new file is different
 # from the old file before creating a new timestamp
-App::ImageStream::List::create(atom => file( @{ $cfg->{ output } }, 'imagestream.atom'), $cfg, @selected);
-App::ImageStream::List::create(rss  => file( @{ $cfg->{ output } }, 'imagestream.rss'), $cfg, @selected);
-#create_atom($output_directory, @selected);
-#create_html($output_directory, @selected);
-
-# XXX upload the complete output directory
+for my $format (qw(atom rss html)) {
+    App::ImageStream::List->create(
+        $format => file( @{ $cfg->{ output } }, "imagestream.$format" ),
+        $cfg,
+        @selected
+    );
+}
+# XXX upload /rsync the complete output directory
