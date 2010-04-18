@@ -42,7 +42,7 @@ Set thumbnail size
 
 =item *
 
-Have a theme directory
+Have (and use/configure) a theme directory
 
 =item * (done)
 
