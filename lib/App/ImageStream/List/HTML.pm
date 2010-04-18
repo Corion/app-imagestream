@@ -17,7 +17,7 @@ sub generate {
     $t->process('templates/plain/imagestream.html',
        { info => $info, items => \@items },
        $r)
-       or die "Error while genreating HTML: " . $t->error;
+       or die "Error while generating HTML: " . $t->error;
     $result
 };
 
