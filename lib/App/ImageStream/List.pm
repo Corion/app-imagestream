@@ -41,6 +41,7 @@ sub create {
         rss  => "$feed_url.rss",
         html => "$feed_url.html",
     };
+    my $theme = $config->{theme}->[0] || 'plain';
     
     my $feedinfo = {
         title   => $config->{title}->[0] || 'My image feed',
@@ -52,6 +53,7 @@ sub create {
         feed_url => "$base_url/" . $file->basename,
         updated => $updated,
         feeds   => $feeds,
+        theme   => $theme,
         about   => "App::ImageStream $VERSION",
     };
     
