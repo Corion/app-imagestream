@@ -27,6 +27,8 @@ $config_raw = <<'=cut';
 
 =head2 C<< output DIR >>
 
+Output directory
+
 Specifies the output directory into which the output will be written.
 
 Example:
@@ -37,6 +39,8 @@ May appear only once.
 
 =head2 C<< theme DIR >>
 
+Theme
+
 Specifies the theme directory to use. You can use a themepack (.tar.gz)
 or a directory.
 
@@ -46,7 +50,13 @@ Example:
 
 May appear only once.
 
+=for config
+    once => 1,
+    default => 'plain',
+
 =head2 C<< collect DIR >>
+
+Collect images from
 
 Lists a single directory, from which all files will get collected.
 Files in subdirectories will also be collected.
@@ -56,6 +66,8 @@ Example:
   collect 'C:/Photos';
 
 =head2 C<< reject REGEX >>
+
+Rejection list
 
 A single expression or substring for files or directories that will
 not get collected.
@@ -167,14 +179,15 @@ Example:
 
 sub parse_pod_config {
     map {
-        /^=head2 C<< (\w+) (.*) >>\s+(.*)$/ms
+        /^=head2 C<< (\w+) (.*) >>\s+(\w.*)\n(.*)$/ms
             or die "Malformed config item '$_'";
-        my ($name,$spec,$desc) = ($1,$2,$3);
+        my ($name,$spec,$label,$desc) = ($1,$2,$3,$4);
         my $count =()= ($spec =~ m/,/g);
         $count++;
         $name => {
             name      => $name,
             spec      => $spec,
+            label     => $label,
             desc      => $desc,
             arg_count => $count,
         },
