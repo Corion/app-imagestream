@@ -1,0 +1,5 @@
+output/*.png
+output/*.jpg
+output/*.rss
+output/*.atom
+output/*.html
