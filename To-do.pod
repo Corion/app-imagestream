@@ -14,10 +14,10 @@ Set title/tags from images/directories
 
 Supported formats:
 
-    CR2 (Image::ExifTool+Imager)
+    C<CR2> (Image::ExifTool+Imager)
     C<JPG> (Imager)
     C<PNG> (Imager)
-    SVG (Inkscape+Imager)
+    C<SVG> (Inkscape+Imager)
 
 =item * (done)
 
@@ -32,7 +32,7 @@ Generate thumbnails (via L<Image::Thumbnail> and L<Imager>)
 
 Thumbnail list as RSS+Atom+HTML/Slideshow/Timeline
 
-=item *
+=item * (done)
 
 Find out how to render HTML in RSS
 
@@ -44,9 +44,9 @@ Set thumbnail size
 
 Have a theme directory
 
-=item *
+=item * (done)
 
-Make the image information into an object (done)
+Make the image information into an object
 
 =back
 
@@ -61,6 +61,10 @@ Add L<Progress::Indicator> for console progress
 =item *
 
 Only render SVG to PNG when needed, not always
+
+=item *
+
+For tracking improvements, output some statistics
 
 =item *
 
@@ -144,6 +148,16 @@ Factor out cascade into config-cascade and file-cascade
 
 Optionally inline all assets (jQuery, CSS, feed icon?) into the generated
 HTML
+
+=item *
+
+Look at L<Imager>s file types to learn what we can handle instead of
+deferring blindly
+
+=item *
+
+Have the internal webserver have an easy way to switch between themes
+for preview
 
 =back
 
