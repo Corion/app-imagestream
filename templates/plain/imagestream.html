@@ -1,0 +1,52 @@
+<!DOCTYPE>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="imagestream.css"/>
+<link rel="alternate" type="application/atom+xml" title="[% title %] Atom feed" 
+    href="[% info.feeds.atom %]"/>
+<link rel="alternate" type="application/rss+xml" title="[% title %] RSS feed"
+    href="[% info.feeds.rss %]"/>
+<!-- link jQ -->
+<!-- link/embed slide"show" code-->
+<!--
+0. Expand thumbs bar towardsd the right, with overflow=auto
+1. Add large image display area
+2. Rewrite links to update image display area instead of following links
+3. If we have a direct link as anchor extension, display that image
+4. Highlight "current" thumbnail
+5. For comments/favourites/etc., potentially add more elements below each image
+-->
+<script type="text/javascript">
+function setupSlides() {
+    $('#thumbs').append('<img id="large">');
+    if (document.location.anchor) {
+        var anchor = document.location.anchor;
+        $('#large').attr('src',anchor);
+    };
+}
+</script>
+</head>
+<body onload="javascript:$(document).ready(setupSlides());">
+<div class="feeds"><a href="[% info.feeds.rss %]"><img src="feed.png"></a></div>
+<p>
+Images by [% info.author %], last updated on [% info.updated %]
+</p>
+<ul id="thumbs">
+[% FOR image IN items %]
+<li><a href="[% image.sizes.640.name.basename %]" name="[% image.file.basename %]">
+    <div class="slide">
+    <img class="thumb"
+        src="[% image.sizes.160.name.basename %]"
+        alt="[% image.title %]"
+        width="[% image.sizes.160.width %]"
+        height="[% image.sizes.160.height %]">
+    <p class="title">[% image.title %]</p>
+    <p class="timestamp">[% image.updated %]</p>
+    </div>
+    </a>
+</li>
+[% END %]
+</ul>
+<div class="about">Created using [% info.about %]</div>
+</body>
+</html>

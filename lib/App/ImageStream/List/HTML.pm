@@ -5,15 +5,20 @@ use Template;
 use vars qw($VERSION);
 $VERSION = '0.01';
 
-sub create {
+sub generate {
     my ($package,$info,@items) = @_;
-    $info ||= {};
-    $info->{atom_feed} ||= 'atom';
-    $info->{rss_feed}  ||= 'rss';
-    $info->{title}     ||= 'My images';
+    
+    my $t = $info->{template} || Template->new({
+        POST_CHOMP => 1,
+        DEBUG => 1,
+    });
+    
     my $r = \my $result;
-    $info->{cpanr}->output_sql_template({ items => \@items },'published.tmpl',$info,$r);
-    $r
+    $t->process('templates/plain/imagestream.html',
+       { info => $info, items => \@items },
+       $r)
+       or die "Error while genreating HTML: " . $t->error;
+    $result
 };
 
 1;
