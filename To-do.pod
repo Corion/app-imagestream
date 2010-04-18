@@ -6,7 +6,7 @@
 
 Manage directories to scan/ignore
 
-=item *
+=item * (done)
 
 Set title/tags from images/directories
 
@@ -22,7 +22,7 @@ Supported formats:
 =item * (done)
 
 Target directory for the images worked on within the last 3 days, 
-or last 100) thumbnails, whichever is larger
+or last 100 thumbnails, whichever is larger
 
 =item * (done)
 
@@ -158,6 +158,10 @@ deferring blindly
 
 Have the internal webserver have an easy way to switch between themes
 for preview
+
+=item *
+
+Release list-to-feed generator separately on CPAN
 
 =back
 
