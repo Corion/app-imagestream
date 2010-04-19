@@ -163,6 +163,10 @@ for preview
 
 Release list-to-feed generator separately on CPAN
 
+=item *
+
+Minify HTML
+
 =back
 
 =cut
