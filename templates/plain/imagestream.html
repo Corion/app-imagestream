@@ -1,7 +1,82 @@
 <!DOCTYPE>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="imagestream.css"/>
+<title>Images by [% info.author %], last updated on [% info.updated %]</title>
+<style>
+body {
+    background: #222;
+    color: #aab;
+}
+
+a {
+    background: #222;
+    color: #aab;
+}
+
+a:visited {
+    background: #222;
+    color: #aab;
+}
+
+a:hover {
+    background: #222;
+    color: #bbd;
+}
+
+#thumbs {
+    height: 220px;
+    overflow: auto;
+}
+
+#thumblist {
+    width: [% items.max * 200 %]px;
+}
+
+#thumblist li {
+    display: inline;
+}
+
+.slide {
+    width: 160px;
+    height: 180px;
+    padding: 10px;
+    border: 1px black solid;
+    float: left;
+    text-align: center;
+    vertical-align: center;
+}
+
+h2 {
+    font: 16px "Trebuchet MS", verdana, arial, sans-serif;
+    font-weight: 1200;
+}
+
+.title {
+    font: 12px "Trebuchet MS", verdana, arial, sans-serif;
+
+}
+
+#large_container {
+    text-align: center;
+    padding: 32px;
+}
+
+img {
+    border: 0px;
+    text-align: center;
+    vertical-align: center;
+}
+
+.about {
+    clear: both;
+    display: block;
+    font: 12px "Trebuchet MS", verdana, arial, sans-serif;
+}
+
+.feeds {
+    float: right;
+}
+</style>
 <link rel="alternate" type="application/atom+xml" title="[% title %] Atom feed" 
     href="[% info.feeds.atom %]"/>
 <link rel="alternate" type="application/rss+xml" title="[% title %] RSS feed"
@@ -17,25 +92,61 @@
 5. For comments/favourites/etc., potentially add more elements below each image
 6. For tag filtering, apply some fancy selector magic?
 -->
-<script type="text/javascript">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
 function setupSlides() {
-    $('#thumbs').append('<img id="large">');
-    if (document.location.anchor) {
+    $('#thumbs a').click(function() {
+        $('#large').attr('src',$(this).attr('href'));
+        return false;
+    });
+    $('#thumbs a:first').click();
+    /* if (document.location.anchor) {
         var anchor = document.location.anchor;
         $('#large').attr('src',anchor);
-    };
-}
+    }; */
+};
+$(document).ready(function () {        
+    $('#thumbs').mousedown(function (event) {
+        $(this)
+            .data('down', true)
+            .data('x', event.clientX)
+            .data('scrollLeft', this.scrollLeft);
+            
+        return false;
+    }).mouseup(function (event) {
+        $(this).data('down', false);
+    }).mousemove(function (event) {
+        if ($(this).data('down') == true) {
+            this.scrollLeft = $(this).data('scrollLeft') + $(this).data('x') - event.clientX;
+        }
+    }).css({
+        'overflow' : 'hidden',
+        'cursor' : '-moz-grab'
+    });
+    setupSlides();
+});
+
+$(window).mouseout(function (event) {
+    if ($('#timeline').data('down')) {
+        try {
+            if (event.originalTarget.nodeName == 'BODY' || event.originalTarget.nodeName == 'HTML') {
+                $('#timeline').data('down', false);
+            }                
+        } catch (e) {}
+    }
+});
 </script>
 </head>
 <body onload="javascript:$(document).ready(setupSlides());">
 <div class="feeds"><a href="[% info.feeds.rss %]"><img src="feed.png"></a></div>
-<p>
+<h2>
 Images by [% info.author %], last updated on [% info.updated %]
-</p>
-<ul id="thumbs">
+</h2>
+<div id="thumbs">
+<ul id="thumblist">
 [% FOR image IN items %]
-<li><a href="[% image.sizes.640.name.basename %]" name="[% image.file.basename %]">
-    <div class="slide">
+<li><div class="slide">
+    <a href="[% image.sizes.640.name.basename %]" name="[% image.file.basename %]">
     <img class="thumb"
         src="[% image.sizes.160.name.basename %]"
         alt="[% image.title %]"
@@ -43,11 +154,15 @@ Images by [% info.author %], last updated on [% info.updated %]
         height="[% image.sizes.160.height %]">
     <p class="title">[% image.title %]</p>
     <p class="timestamp">[% image.updated %]</p>
-    </div>
     </a>
+    </div>
 </li>
 [% END %]
 </ul>
+</div>
+<div id="large_container">
+<img id="large">
+</div>
 <div class="about">Created using [% info.about %]</div>
 </body>
 </html>
