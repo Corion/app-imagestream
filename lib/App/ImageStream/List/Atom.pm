@@ -45,8 +45,6 @@ sub generate {
 <p><a href="$url_large" title="$title"><img src="$url_thumb" width="$image->{sizes}->{160}->{width}" height="$image->{sizes}->{160}->{height}" alt="$title" /></a></p>
 HTML
     
-        #use Data::Dumper;
-        #warn Dumper $image->{tags};
         my @categories = map {;
             category => $_,
         } @{$image->{tags}};
