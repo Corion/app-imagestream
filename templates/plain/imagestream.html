@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<title>Images by [% info.author %], last updated on [% info.updated %]</title>
+<title>Images by [% info.author %]</title>
 <style>
 body {
     background: #222;
@@ -19,17 +19,22 @@ a:visited {
 }
 
 a:hover {
-    background: #444;
+    background: #666;
     color: #bbd;
 }
 
 #thumbs {
-    height: 220px;
+    height: 250px;
     overflow: auto;
+    padding: none;
 }
 
 #thumblist {
     width: [% items.max * 200 %]px;
+    list-style: none;
+    padding: none;
+    margin: 0; padding: 0;
+    background: #333;
 }
 
 #thumblist li {
@@ -38,8 +43,8 @@ a:hover {
 
 .slide {
     width: 160px;
-    height: 180px;
-    padding: 10px;
+    height: 230px;
+    padding: 6px;
     border: 1px black solid;
     float: left;
     text-align: center;
@@ -52,7 +57,11 @@ h2 {
 }
 
 .title {
-    font: 12px "Trebuchet MS", verdana, arial, sans-serif;
+    font: 14px "Trebuchet MS", verdana, arial, sans-serif;
+
+}
+.timestamp {
+    font: 10px "Trebuchet MS", verdana, arial, sans-serif;
 
 }
 
@@ -72,13 +81,14 @@ img {
     display: block;
     font: 12px "Trebuchet MS", verdana, arial, sans-serif;
 }
+
 .feeds {
     float: right;
 }
 
 .navigation {
-    height: 230px;
-    line-height: 230px;
+    height: 250px;
+    line-height: 250px;
     display:inline-block;
     vertical-align:middle;
     text-align: center;
@@ -168,8 +178,8 @@ $(window).mouseout(function (event) {
         width="[% image.sizes.160.width %]"
         height="[% image.sizes.160.height %]">
     <p class="title">[% image.title %]</p>
-    <p class="timestamp">[% image.updated %]</p>
     </a>
+    <p class="timestamp">[% image.date_taken %]</p>
     </div>
 </li>
 [% END %]

@@ -112,8 +112,9 @@ sub fetch_metadata {
                        : $extension eq 'svg' ? 'image/png'
                                              : 'image/jpeg';
 
-    $info->{date_taken} = strftime '%Y-%m-%dT%H:%M:%SZ',
-                              gmtime( $info->{mtime} );
+    $info->{date_taken} = $img_info->{DateTimeOriginal}
+                          || strftime '%Y-%m-%dT%H:%M:%SZ',
+                                gmtime( $info->{mtime} );
 
     my $rotate = $rotation{ $img_info->{Orientation} || '' };
     warn "$info->{file}: Unknown image orientation '$img_info->{Orientation}'"
