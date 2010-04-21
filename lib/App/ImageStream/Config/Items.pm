@@ -175,6 +175,17 @@ Example:
 
   title 'All my pictures'
 
+=head2 C<< inkscape PATH >>
+
+Path to your Inkscape executable
+
+This is used to locate the Inkscape program, which is needed to
+convert SVG files to PNG bitmap files.
+
+Example:
+
+  inkscape 'C:/Program Files/Inkscape/inkscape.exe'
+
 =cut
 
 sub parse_pod_config {

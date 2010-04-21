@@ -7,6 +7,7 @@ use Decision::Depends;
 use File::Temp qw( tempfile );
 use App::ImageStream::Config::Items;
 use App::ImageStream::Config::DSL;
+use App::ImageStream::Config::Getopt;
 use App::ImageStream::List;
 use App::ImageStream::Image;
 #use Data::Dumper;
@@ -21,16 +22,20 @@ BEGIN {
 use vars qw'%thumbnail_handlers $cfg';
 
 # Make these override $cfg
-use Getopt::Long;
-GetOptions(
+#use Getopt::Long;
+my ($ok,$opt_commandline) = App::ImageStream::Config::Getopt->get_options(
+    \%App::ImageStream::Config::Items::items,
     'f|force' => \my $force,
     'c|config' => \my $config,
-    'i|inkscape' => \my $inkscape,
+);
+$config ||= 'imagestream.cfg';
+
+$cfg = App::ImageStream::Config::DSL->parse_config_file(
+    \%App::ImageStream::Config::Items::items,
+    $config,
 );
 
-# XXX Make these readable from the config in addition
-$inkscape ||= 'C:\\Programme\\Inkscape\\inkscape.exe';
-$config ||= 'imagestream.cfg';
+my $inkscape = $cfg->{inkscape}->[0] || 'C:\\Programme\\Inkscape\\inkscape.exe';
 
 Decision::Depends::Configure({ Force => $force });
 
@@ -129,11 +134,6 @@ sub create_thumbnails {
         delete $info->{blob};
     };
 }
-
-$cfg = App::ImageStream::Config::DSL->parse_config_file(
-    \%App::ImageStream::Config::Items::items,
-    $config,
-);
 
 my @images = collect_images($cfg->{collect},$cfg->{reject} );
 my %found = map { $_ => $_ } @images;
