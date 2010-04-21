@@ -1,0 +1,39 @@
+=head1 Feature list for version 0.01
+
+=over 4
+
+=item *
+
+Supported formats:
+
+    C<CR2> (Image::ExifTool+Imager)
+    C<JPG> (Imager)
+    C<PNG> (Imager)
+    C<SVG> (Inkscape+Imager)
+
+=item *
+
+Scan/ignore directories based on globs
+
+=item *
+
+Set title/tags from images/directories
+
+=item *
+
+Show the images worked on within the last 3 days, 
+or last 100 thumbnails, whichever is larger
+
+=item *
+
+Generate thumbnails
+
+=item *
+
+Publish thumbnail list as feed (RSS, Atom) and HTML Slideshow/Timeline
+
+=item *
+
+One theme
+
+=back
