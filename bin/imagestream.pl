@@ -11,6 +11,9 @@ use App::ImageStream::List;
 use App::ImageStream::Image;
 #use Data::Dumper;
 
+use vars qw($VERSION);
+$VERSION = '0.01';
+
 BEGIN {
     ${^WIN32_SLOPPY_STAT} = 1;
 }
