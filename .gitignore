@@ -4,3 +4,4 @@ output/*.jpeg
 output/*.rss
 output/*.atom
 output/*.html
+Thumbs.db

@@ -40,7 +40,7 @@ Find out how to render HTML in RSS
 
 Set thumbnail size
 
-=item *
+=item * (done)
 
 Have (and use/configure) a theme directory
 
