@@ -104,7 +104,22 @@ img {
 }
 #left { float: left; left: 0; }
 #right { float: right; right:0; }
+#slider {
+  width: 80%;
+  height: 6px;
+  margin: 5px auto;
+  position: relative;
+  background: #AAA;
+}
 
+.ui-slider-handle {
+  width: 8px;
+  height: 14px;
+  position: absolute;
+  top: -4px;
+  background: #888;
+  border: solid 1px black;
+}
 </style>
 <link rel="alternate" type="application/atom+xml" title="[% title %] Atom feed" 
     href="[% info.feeds.atom %]"/>
@@ -117,7 +132,8 @@ img {
 5. For comments/favourites/etc., potentially add more elements below each image
 6. For tag filtering, apply some fancy selector magic?
 -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
 function setupSlides() {
     $('#thumbs a').click(function() {
@@ -125,12 +141,47 @@ function setupSlides() {
         return false;
     });
     $('#thumbs a:first').click();
+    
+    /*
     var left=$('<span id="left" >&#9664;</span>');
     left.addClass('navigation');
+    left.click(function() {
+        // move image bar to the left
+    });
     var right=$('<span id="right">&#9654;</span>');
     right.addClass('navigation');
-    $('#thumbs').before(left).before(right);
+    right.click(function() {
+        // move image bar to the right
+    });
+    */
+    
+    var slider=$('<div id="slider"></div>');
+    $(slider).slider({
+        animate: true,
+        change: handleSliderChange,
+        slide: handleSliderSlide
+    });
+    
+    $('#thumbs')
+        //.before(left)
+        //.before(right)
+        .after(slider);
 };
+
+function  handleSliderChange(e, ui)
+{
+  var maxScroll = $("#thumbs").attr("scrollWidth") -
+                  $("#thumbs").width();
+  $("#thumbs").animate({scrollLeft: ui.value *
+     (maxScroll / 100) }, 1000);
+}
+
+function handleSliderSlide(e, ui)
+{
+  var maxScroll = $("#thumbs").attr("scrollWidth") -
+                  $("#thumbs").width();
+  $("#thumbs").attr({scrollLeft: ui.value * (maxScroll / 100) });
+}
 $(document).ready(function () {        
     $('#thumbs').mousedown(function (event) {
         $(this)
