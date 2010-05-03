@@ -45,7 +45,9 @@ sub collect_images {
     find( sub {
         for (@$reject) {
             if ($File::Find::name =~ /$_/) {
-                $File::Find::prune = 1;
+                if (-d) {
+                    $File::Find::prune = 1;
+                };
                 #warn "Rejecting '$File::Find::name' ($_)";
                 last;
             }
