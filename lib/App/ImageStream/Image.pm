@@ -33,10 +33,6 @@ sub new {
     $self
 };
 
-sub DESTROY {
-    warn "Image $_[0]->{file} released";
-};
-
 sub create_thumbnail {
     my ($self,$thumbname,$rotate,$size,$i) = @_;
     # XXX We're Imager-specific here
@@ -131,6 +127,7 @@ sub fetch_metadata {
 sub release_metadata {
     my ($self) = @_;
     undef $self->{blob};
+    undef $self->{exif}->{PreviewImage};
 };
 
 sub stat {

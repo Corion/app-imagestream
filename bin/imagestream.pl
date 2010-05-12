@@ -173,6 +173,8 @@ while (@images
         # XXX verbose: output rejection status
     }
 }
+@images = (); # discard the remaining images, if any
+exit;
 
 # XXX Ideally, we should check whether the new file is different
 # from the old file before creating a new timestamp
