@@ -21,6 +21,7 @@ Config::Gitlike configuration instead or in addition to the DSL
 =item *
 
 Automated upload via WebDAV / SCP / tar+ssh+untar / copy / rsync
+(also see L<App::Koi>)
 
 =item *
 
