@@ -42,17 +42,14 @@ Decision::Depends::Configure({ Force => $force });
 sub collect_images {
     my ($search,$reject) = @_;
     my @images;
+    my $re_reject = join "|", map { qr/$_/i } @$reject;
     find( sub {
-        for (@$reject) {
-            if ($File::Find::name =~ /$_/) {
-                if (-d) {
-                    $File::Find::prune = 1;
-                };
-                #warn "Rejecting '$File::Find::name' ($_)";
-                last;
-            }
-        }
-        if (! $File::Find::prune) {
+        if ($File::Find::name =~ /$re_reject/) {
+            if (-d) {
+                $File::Find::prune = 1;
+            };
+            warn "Rejecting '$File::Find::name'";
+        } else {
             push @images, file($File::Find::name)
                 if (-f $File::Find::name);
         };
@@ -77,12 +74,10 @@ sub create_thumbnail_sizes {
             # XXX The svg/Imager handler dispatch should go here
             $i = $info->create_thumbnail($thumbname,$rotate,$s,$i);
         } else {
-            #warn sprintf "%s is newer than %s" ,
-            #    $thumbname,
-            #    $info->{file}->basename;
             $info->set_thumbnail_info($thumbname,$s);
         }
     }
+    #undef $i; # just to be safe
 };
 
 # XXX We shouldn't need to render the SVG just to potentially create thumbnails
@@ -173,6 +168,7 @@ while (@images
 
         # Create thumbnail directly instead of keeping the image preview in memory
         create_thumbnails(@{ $cfg->{ output } },$cfg->{ size },$info);
+        $info->release_metadata();
     } else {
         # XXX verbose: output rejection status
     }
