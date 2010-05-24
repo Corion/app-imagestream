@@ -156,6 +156,8 @@ my @selected;
 # To reduce IO, we only read the metadata of images that pass the
 # other criteria. This prevents us from using grep ...
 warn sprintf "Filtering %d images\n", scalar @images;
+# XXX Make status message out of this warning
+
 my $cutoff = time() - $cfg->{cutoff}->[0] * 24 * 3600;
 my %exclude_tag = map { uc $_ => 1 } @{ $cfg->{exclude_tag} };
 while (@images
@@ -167,7 +169,11 @@ while (@images
         push @selected, $info;
 
         # Create thumbnail directly instead of keeping the image preview in memory
+        # XXX Ideally, we should check whether the new file is different
+        # from the old file before creating a new timestamp
         create_thumbnails(@{ $cfg->{ output } },$cfg->{ size },$info);
+        
+        # Save some memory by releasing some image data as early as possible
         $info->release_metadata();
     } else {
         # XXX verbose: output rejection status
@@ -175,8 +181,6 @@ while (@images
 }
 @images = (); # discard the remaining images, if any, to free up some more memory
 
-# XXX Ideally, we should check whether the new file is different
-# from the old file before creating a new timestamp
 for my $format (qw(atom rss html)) {
     App::ImageStream::List->create(
         $format => file( @{ $cfg->{ output } }, "imagestream.$format" ),
