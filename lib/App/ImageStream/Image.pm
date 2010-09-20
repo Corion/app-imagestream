@@ -88,6 +88,22 @@ sub set_thumbnail_info {
     };    
 };
 
+sub capture_date {
+    my ($self) = @_;
+    if (! $self->{ date_taken }) {
+        $self->fetch_metadata();
+    };
+    
+    my $ts = $self->{date_taken};
+    if (my @t = ($ts =~ /^(\d+):(\d+):(\d+) (\d+):(\d+):(\d{2})/)) {
+        my %opts;
+        @opts{qw(year month day hour minute second)} = @t;
+        return DateTime->new(%opts);
+    } else {
+        die "Malformed timestamp '$ts'";
+    }
+}
+
 sub fetch_metadata {
     my ($info) = @_;
 
