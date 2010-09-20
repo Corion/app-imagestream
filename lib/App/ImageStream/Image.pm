@@ -165,11 +165,19 @@ sub thumbnail_name {
     $target = $1;
     my $extension = $self->{blob_type} || $self->{extension};
 
-    my @tags = @{ $self->{exif}->{KeyWords} || []};
+    my @tags = @{ $self->{exif}->{Keywords} || []};
     my $dir = $self->{file}->dir->relative($self->{file}->dir->parent);
     push @tags, "$dir";
-    $self->{tags} = \@tags;
     
+    # Now, merge our newfound tags with the other tags we already (might) have
+    $self->{tags} ||= [];    
+    my %seen;
+    @seen{ @{ $self->{tags} } } = (1) x @{ $self->{ tags } };
+    for (@tags) {
+        push @{ $self->{ tags } }, $_
+            unless $seen{ $_ }++;
+    }
+            
     # make uri-sane filenames
     # XXX Maybe use whatever SocialText used to create titles
     # XXX If I can't find this, make this into its own module
