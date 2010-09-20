@@ -6,6 +6,7 @@ use Image::ExifTool qw(:Public);
 use Image::Thumbnail;
 use Image::Info qw(image_info dim);
 use POSIX qw(strftime);
+use DateTime;
 
 use vars qw'%rotation';
 
