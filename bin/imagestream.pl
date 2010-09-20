@@ -10,6 +10,8 @@ use App::ImageStream::Config::DSL;
 use App::ImageStream::Config::Getopt;
 use App::ImageStream::List;
 use App::ImageStream::Image;
+use DateTime;
+use DateTime::Duration;
 #use Data::Dumper;
 
 use vars qw($VERSION);
@@ -160,12 +162,33 @@ warn sprintf "Filtering %d images\n", scalar @images;
 
 my $cutoff = time() - $cfg->{cutoff}->[0] * 24 * 3600;
 my %exclude_tag = map { uc $_ => 1 } @{ $cfg->{exclude_tag} };
+
+# XXX Make these configurable
+my $dt_reference = DateTime->now;
+my $last_time = DateTime->from_epoch( epoch => 1 );
+my $distance = DateTime::Duration->new( hours => 5  );
+my $ref_date;
+
 while (@images
          and ($images[0]->{mtime} > $cutoff or $cfg->{minimum}->[0] > @selected)) {
     my $info = shift @images;
     $info->fetch_metadata();
     
-    if (! grep { exists $exclude_tag{uc $_} } @{ $info->{exif}->{KeyWords} }) {
+    # Now, add a "date" tag to all images, grouping together those taken
+    # in close succession, so wrapping over midnight doesn't break up those
+    my $last_time = DateTime->from_epoch( epoch => 1 );
+    my $target_directory;
+    my $capture_date = $info->capture_date;
+    my $this_distance = ($capture_date - $last_time);
+    if ($dt_reference+$this_distance > $dt_reference+$distance) {
+        $ref_date = $capture_date->strftime('%Y-%m-%d');
+        #warn $ref_date;
+        $last_time = $capture_date->clone;
+    };
+    $last_time = $capture_date;
+    push @{ $info->{tags} }, $ref_date;
+    
+    if (! grep { exists $exclude_tag{uc $_} } @{ $info->{exif}->{Keywords} }) {
         push @selected, $info;
 
         # Create thumbnail directly instead of keeping the image preview in memory
