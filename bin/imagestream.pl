@@ -204,6 +204,7 @@ while (@images
 }
 @images = (); # discard the remaining images, if any, to free up some more memory
 
+warn sprintf "Found %d images\n", scalar @selected;
 for my $format (qw(atom rss html)) {
     App::ImageStream::List->create(
         $format => file( @{ $cfg->{ output } }, "imagestream.$format" ),
@@ -211,4 +212,5 @@ for my $format (qw(atom rss html)) {
         @selected
     );
 }
+
 # XXX upload /rsync the complete output directory
