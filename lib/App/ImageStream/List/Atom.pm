@@ -3,6 +3,7 @@ use strict;
 use XML::Atom::SimpleFeed;
 use POSIX qw(strftime);
 #use HTML::Entities qw( encode_entities );
+use Data::Dumper;
 
 use vars qw($VERSION);
 $VERSION = '0.01';
