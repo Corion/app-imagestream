@@ -59,6 +59,7 @@ sub create_thumbnail {
     my $t = Image::Thumbnail->new(
         module     => 'Imager',
         object     => $i,
+        #input      => $self->{blob} || "$self->{file}",
         size       => $size,
         quality    => 95,
         outputpath => $thumbname,
