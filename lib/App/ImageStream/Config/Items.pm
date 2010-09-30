@@ -186,6 +186,17 @@ Example:
 
   inkscape 'C:/Program Files/Inkscape/inkscape.exe'
 
+=head2 C<< jobs COUNT >>
+
+Number of threads to use.
+
+This is used to specify the number of parallel threads of execution
+that will be launched to convert images.
+
+Example:
+
+  jobs 4
+
 =cut
 
 sub parse_pod_config {
