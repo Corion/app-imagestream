@@ -100,6 +100,10 @@ sub capture_date {
         my %opts;
         @opts{qw(year month day hour minute second)} = @t;
         return DateTime->new(%opts);
+    } elsif (@t = ($ts =~ /^(\d+)-(\d+)-(\d+)T(\d+):(\d+):(\d{2})Z/)) {
+        my %opts;
+        @opts{qw(year month day hour minute second)} = @t;
+        return DateTime->new(%opts);
     } else {
         die "Malformed timestamp '$ts'";
     }
