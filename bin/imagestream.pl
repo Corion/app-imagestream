@@ -195,16 +195,15 @@ while (@images
         # Create thumbnail directly instead of keeping the image preview in memory
         # XXX Ideally, we should check whether the new file is different
         # from the old file before creating a new timestamp
-        # XXX Move thumbnail creation into its own thread via Thread::Queue
-        #     so we can get a bit faster
         create_thumbnails(@{ $cfg->{ output } },$cfg->{ size },$info);
         
-        # Save some memory by releasing some image data as early as possible
+        # Save some memory
         $info->release_metadata();
     } else {
         # XXX verbose: output rejection status
     }
 }
+
 @images = (); # discard the remaining images, if any, to free up some more memory
 
 warn sprintf "Found %d images\n", scalar @selected;
