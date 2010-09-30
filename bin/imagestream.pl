@@ -15,7 +15,7 @@ use DateTime::Duration;
 #use Data::Dumper;
 
 use vars qw($VERSION);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 BEGIN {
     ${^WIN32_SLOPPY_STAT} = 1;
@@ -50,7 +50,8 @@ sub collect_images {
             if (-d) {
                 $File::Find::prune = 1;
             };
-            warn "Rejecting '$File::Find::name'";
+            # XXX Make rejection message/verbosity configurable
+            warn "Rejecting '$File::Find::name'\n";
         } else {
             push @images, file($File::Find::name)
                 if (-f $File::Find::name);
@@ -72,14 +73,13 @@ sub create_thumbnail_sizes {
         warn "$info->{file} generates empty thumb"
             if $thumbname eq "";
         
-        if (test_dep( -target => "$thumbname", -depend => "$info->{file}" )) {
+        if (test_dep( -target => "$thumbname", -depend => $info->{file}->stringify )) {
             # XXX The svg/Imager handler dispatch should go here
             $i = $info->create_thumbnail($thumbname,$rotate,$s,$i);
         } else {
             $info->set_thumbnail_info($thumbname,$s);
         }
     }
-    #undef $i; # just to be safe
 };
 
 # XXX We shouldn't need to render the SVG just to potentially create thumbnails
