@@ -1,5 +1,11 @@
 #!perl -w
 use strict;
+
+# XXX these should become optional
+# Currently, we don't use threads
+#use threads;
+#use Thread::Queue;
+
 use Path::Class;
 use File::Find;
 use List::MoreUtils qw(zip);
