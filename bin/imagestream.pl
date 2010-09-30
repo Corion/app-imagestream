@@ -194,6 +194,8 @@ while (@images
         # Create thumbnail directly instead of keeping the image preview in memory
         # XXX Ideally, we should check whether the new file is different
         # from the old file before creating a new timestamp
+        # XXX Move thumbnail creation into its own thread via Thread::Queue
+        #     so we can get a bit faster
         create_thumbnails(@{ $cfg->{ output } },$cfg->{ size },$info);
         
         # Save some memory by releasing some image data as early as possible
