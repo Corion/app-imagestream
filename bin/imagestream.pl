@@ -128,9 +128,10 @@ sub create_thumbnail {
 
 sub create_thumbnails {
     my ($output_directory, $sizes, @files) = @_;
+    
     for my $info (@files) {
         create_thumbnail($info,$output_directory,$sizes);
-        delete $info->{blob};
+        $info->release_metadata;
     };
 }
 
