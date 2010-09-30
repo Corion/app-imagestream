@@ -86,6 +86,11 @@ Make image/thumbnail creation (optionally) multithreaded
 
 =item *
 
+Dynamically load threads / Thread::Queue based on how many threads of
+execution are specified by the user
+
+=item *
+
 Have auto-expanding items for "My Images" to make configuration
 more magic
 
