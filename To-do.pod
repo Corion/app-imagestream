@@ -82,8 +82,37 @@ Precedence (highest to lowest):
 
 =item *
 
+Make image/thumbnail creation (optionally) multithreaded
+
+=item *
+
+Have auto-expanding items for "My Images" to make configuration
+more magic
+
+=item *
+
 Have a "regen-feed" option that just looks at the thumbnail
 files and generates RSS+Atom+HTML from it
+
+=item *
+
+More visible RSS icon in-page
+
+=item *
+
+left/right buttons in page
+
+=item *
+
+autoplay / slideshow in page
+
+=item *
+
+link to specific image in image stream
+
+=item *
+
+"permalink"/"link to this image" for each image
 
 =item *
 
