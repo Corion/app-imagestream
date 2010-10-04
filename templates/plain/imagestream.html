@@ -155,6 +155,9 @@ function setupSlides() {
         };
         if (target >= 0) {
             $("#thumbs").animate({ scrollLeft: target }, 300);
+            var maxScroll = $("#thumbs").attr("scrollWidth") -
+                            $("#thumbs").width();
+            $("#slider").slider("option", "value", target * 100 / maxScroll );
         };
     });
     
@@ -231,16 +234,19 @@ function prevSlide() {
 };
 
 
-function  handleSliderChange(e, ui)
+function handleSliderChange(e, ui)
 {
+  if(e.originalEvent==undefined) return;
+  
   var maxScroll = $("#thumbs").attr("scrollWidth") -
                   $("#thumbs").width();
-  $("#thumbs").animate({scrollLeft: ui.value *
+      $("#thumbs").animate({scrollLeft: ui.value *
      (maxScroll / 100) }, 1000);
 }
 
 function handleSliderSlide(e, ui)
 {
+  if(e.originalEvent==undefined) return;
   var maxScroll = $("#thumbs").attr("scrollWidth") -
                   $("#thumbs").width();
   $("#thumbs").attr({scrollLeft: ui.value * (maxScroll / 100) });
