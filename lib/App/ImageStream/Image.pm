@@ -43,7 +43,7 @@ sub create_thumbnail {
             $i = $i->read(data => ${$self->{blob}}, type => $self->{blob_type}, )
                 or warn sprintf "%s: %s", $self->{file}, $i->errstr;
         } else {
-            my $t = $i->read(file => "$self->{file}")
+            my $t = $i->read(file => $self->{file}->stringify)
                 or warn sprintf "%s: %s", $self->{file}, $i->errstr;
             if (! $t) {
                 return
