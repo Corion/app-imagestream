@@ -74,7 +74,7 @@ sub create_thumbnail {
 
 sub set_thumbnail_info {
     my ($self,$thumbname,$size,$width,$height) = @_;
-    $self->{sizes} ||= {};
+     $self->{sizes} ||= {};
     
     if (! exists $self->{sizes}->{$size}) {
         if (! $width) {
