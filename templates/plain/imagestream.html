@@ -135,11 +135,28 @@ img {
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
 function setupSlides() {
-    $('#thumbs a').click(function() {
-        $('#large').attr('src',$(this).attr('href'));
-        return false;
+    // Copy all values from href to name
+    $('#thumbs a').each(function() {
+        $(this).attr('href', '#' + $(this).attr('href'));
     });
-    $('#thumbs a:first').click();
+    
+    $('#thumbs a').click(function() {
+        $('#large').attr('src', $(this).attr('href').substring(1));
+    });
+    var focus;
+    
+    // If we have an anchored URL, use that
+    var url = document.location.toString();
+    if (url.match('#')) {
+        // click the navigation item corresponding to the anchor
+        var a = '#' + url.split('#')[1];
+        focus = $('a[href="' + a + '"]');
+    };
+    
+    if (! focus) {
+        focus = $('#thumbs a:first')
+    };
+    focus.click();
     
     /*
     var left=$('<span id="left" >&#9664;</span>');
