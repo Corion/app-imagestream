@@ -142,6 +142,20 @@ function setupSlides() {
     
     $('#thumbs a').click(function() {
         $('#large').attr('src', $(this).attr('href').substring(1));
+        // Make sure the top bar displays us
+        var lx = $(this).position().left;
+        var lw = $(this).width();
+        var tx = $("#thumbs").scrollLeft();
+        var w = $("#thumbs").width();
+        var target = -1;
+        if (lx < 0) {
+            target = tx+lx;
+        } else if (lx > w-lw) {
+            target = tx + lx -w +lw;
+        };
+        if (target >= 0) {
+            $("#thumbs").animate({ scrollLeft: target }, 300);
+        };
     });
     
     var focus = $('#thumbs a:first')
