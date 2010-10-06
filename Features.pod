@@ -36,4 +36,8 @@ Publish thumbnail list as feed (RSS, Atom) and HTML Slideshow/Timeline
 
 One theme
 
+=item *
+
+link to specific image in image stream
+
 =back
