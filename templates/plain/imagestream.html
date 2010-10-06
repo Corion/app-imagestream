@@ -135,7 +135,8 @@ img {
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
 function setupSlides() {
-    // Copy all values from href to name
+    // Turn all image hrefs to anchor-hrefs to prevent following the links
+    // (yet still keeping the image name information)
     $('#thumbs a').each(function() {
         $(this).attr('href', '#' + $(this).attr('href'));
     });
@@ -146,7 +147,7 @@ function setupSlides() {
         var lx = $(this).position().left;
         var lw = $(this).width();
         var tx = $("#thumbs").scrollLeft();
-        var w = $("#thumbs").width();
+        var w  = $("#thumbs").width();
         var target = -1;
         if (lx < 0) {
             target = tx+lx;
