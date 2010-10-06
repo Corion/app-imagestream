@@ -84,10 +84,10 @@ Make the configuration cascade include the command line
 
 Precedence (highest to lowest):
 
-  command line
-  directory config file / -f
-  ~/config
-  /etc/config
+  command line               (ok)
+  directory config file / -f (ok)
+  ~/config                   (missing)
+  /etc/config                (missing)
 
 =back
 
@@ -125,10 +125,6 @@ left/right buttons in page
 =item *
 
 autoplay / slideshow in page
-
-=item *
-
-link to specific image in image stream
 
 =item *
 
