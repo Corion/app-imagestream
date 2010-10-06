@@ -173,18 +173,12 @@ function setupSlides() {
     };    
     focus.click();
     
-    /*
     var left=$('<span id="left" >&#9664;</span>');
     left.addClass('navigation');
-    left.click(function() {
-        // move image bar to the left
-    });
+    left.click(prevSlide);
     var right=$('<span id="right">&#9654;</span>');
     right.addClass('navigation');
-    right.click(function() {
-        // move image bar to the right
-    });
-    */
+    right.click(nextSlide);
     
     var slider=$('<div id="slider"></div>');
     $(slider).slider({
@@ -194,13 +188,13 @@ function setupSlides() {
     });
     
     $('#thumbs')
-        //.before(left)
-        //.before(right)
+        .before(left)
+        .before(right)
         .after(slider);
 };
 
 function nextSlide() {
-    var focus = $('#thumbs li:first')
+    var focus = $('#thumbs li').first();
     
     // If we have an anchored URL, use that
     var url = document.location.toString();
@@ -211,12 +205,15 @@ function nextSlide() {
         focus = $('#thumbs li a[href="' + a + '"]').closest('li');
     };
     var l = focus.next('li').find('a');
+    if (! l[0]) {
+        l = $('#thumbs a').first();
+    };
     l.click();
     document.location = base + l.attr('href');
 };
 
 function prevSlide() {
-    var focus = $('#thumbs li:first')
+    var focus = $('#thumbs li').first();
     
     // If we have an anchored URL, use that
     var url = document.location.toString();
@@ -227,8 +224,8 @@ function prevSlide() {
         focus = $('#thumbs li a[href="' + a + '"]').closest('li');
     };
     var l = focus.prev('li').find('a');
-    if (! l) {
-        l = $('#thumbs li:last');
+    if (! l[0]) {
+        l = $('#thumbs a').last();
     };
     l.click();
     document.location = base + l.attr('href');
