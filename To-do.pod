@@ -4,6 +4,21 @@
 
 =item *
 
+White border around active/current image, together with triangle pointing down
+
+Potentially do this by just adding/removing a class from the focused image
+
+=item *
+
+Calculate the #thumbs width better
+
+=item *
+
+Move the image names into alt-captions. Display the image name and metadata
+only with the large image, if JS is enabled.
+
+=item *
+
 Add L<Progress::Indicator> for console progress
 
 =item *
