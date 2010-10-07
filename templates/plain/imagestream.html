@@ -161,17 +161,72 @@ function setupSlides() {
                             $("#thumbs").width();
             $("#slider").slider("option", "value", target * 100 / maxScroll );
         };
-    });
+    };
     
-    var focus = $('#thumbs a:first')
+    var nextSlide = function(e) {
+        var focus = $('#thumbs li').first();
+        
+        // If we have an anchored URL, use that
+        var url = document.location.toString();
+        var base = url.split('#')[0];
+        if (url.match('#')) {
+            // click the navigation item corresponding to the anchor
+            var a = '#' + url.split('#')[1];
+            focus = $('#thumbs li a[href="' + a + '"]').closest('li');
+        };
+        var l = focus.next('li').find('a');
+        if (! l[0]) {
+            l = $('#thumbs a').first();
+        };
+        l.click();
+        document.location = base + l.attr('href');
+        if(e.originalEvent==undefined) return;
+        if (slideTimer) {
+            window.clearInterval( slideTimer );
+        };
+    };
+
+    var prevSlide = function (e) {
+        var focus = $('#thumbs li').first();
+        
+        // If we have an anchored URL, use that
+        var url = document.location.toString();
+        var base = url.split('#')[0];
+        if (url.match('#')) {
+            // click the navigation item corresponding to the anchor
+            var a = '#' + url.split('#')[1];
+            focus = $('#thumbs li a[href="' + a + '"]').closest('li');
+        };
+        var l = focus.prev('li').find('a');
+        if (! l[0]) {
+            l = $('#thumbs a').last();
+        };
+        l.click();
+        document.location = base + l.attr('href');
+        if(e.originalEvent==undefined) return;
+        if (slideTimer) {
+            window.clearInterval( slideTimer );
+        };
+    };
+
+    $('#thumbs a').click(function(e) {
+        displaySlide(this);
+        if(e.originalEvent==undefined) return;
+        if (slideTimer) {
+            window.clearInterval( slideTimer );
+        };
+    });
+
+    var focus = $('#thumbs a').first();
     
     // If we have an anchored URL, use that
     var url = document.location.toString();
     if (url.match('#')) {
         // click the navigation item corresponding to the anchor
         var a = '#' + url.split('#')[1];
-        focus = $('#thumbs a[href="' + a + '"]');
-    };    
+        focus = $('a[href="' + a + '"]');
+    };
+    
     focus.click();
     
     var left=$('<span id="left" >&#9664;</span>');
@@ -188,50 +243,15 @@ function setupSlides() {
         slide: handleSliderSlide
     });
     
+    $('#playpause')
+        .toggle(function(){slideTimer = window.setInterval(prevSlide,5000)}, function(){window.clearInterval(slideTimer)})
+        .show();
+    
     $('#thumbs')
         .before(left)
         .before(right)
         .after(slider);
 };
-
-function nextSlide() {
-    var focus = $('#thumbs li').first();
-    
-    // If we have an anchored URL, use that
-    var url = document.location.toString();
-    var base = url.split('#')[0];
-    if (url.match('#')) {
-        // click the navigation item corresponding to the anchor
-        var a = '#' + url.split('#')[1];
-        focus = $('#thumbs li a[href="' + a + '"]').closest('li');
-    };
-    var l = focus.next('li').find('a');
-    if (! l[0]) {
-        l = $('#thumbs a').first();
-    };
-    l.click();
-    document.location = base + l.attr('href');
-};
-
-function prevSlide() {
-    var focus = $('#thumbs li').first();
-    
-    // If we have an anchored URL, use that
-    var url = document.location.toString();
-    var base = url.split('#')[0];
-    if (url.match('#')) {
-        // click the navigation item corresponding to the anchor
-        var a = '#' + url.split('#')[1];
-        focus = $('#thumbs li a[href="' + a + '"]').closest('li');
-    };
-    var l = focus.prev('li').find('a');
-    if (! l[0]) {
-        l = $('#thumbs a').last();
-    };
-    l.click();
-    document.location = base + l.attr('href');
-};
-
 
 function handleSliderChange(e, ui)
 {
