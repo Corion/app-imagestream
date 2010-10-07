@@ -141,11 +141,12 @@ function setupSlides() {
         $(this).attr('href', '#' + $(this).attr('href'));
     });
     
-    $('#thumbs a').click(function() {
-        $('#large').attr('src', $(this).attr('href').substring(1));
+    var displaySlide = function(a) {
+        a = $(a);
+        $('#large').attr('src', a.attr('href').substring(1));
         // Make sure the top bar displays us
-        var lx = $(this).position().left;
-        var lw = $(this).width();
+        var lx = a.position().left;
+        var lw = a.width();
         var tx = $("#thumbs").scrollLeft();
         var w  = $("#thumbs").width();
         var target = -1;
