@@ -289,15 +289,13 @@ $(document).ready(function () {
         'cursor' : '-moz-grab'
     });
     setupSlides();
-    
-    // start the slideshow if location has play=1
 });
 
 $(window).mouseout(function (event) {
-    if ($('#timeline').data('down')) {
+    if ($('#thumbs').data('down')) {
         try {
             if (event.originalTarget.nodeName == 'BODY' || event.originalTarget.nodeName == 'HTML') {
-                $('#timeline').data('down', false);
+                $('#thumbs').data('down', false);
             }                
         } catch (e) {}
     }
@@ -305,7 +303,7 @@ $(window).mouseout(function (event) {
 </script>
 </head>
 <body>
-<div class="feeds"><a href="[% info.feeds.rss %]"><img src="feed.png"></a></div>
+<div class="feeds"><a href="[% info.feeds.rss %]" alt="Subscribe to my images"><img src="feed-icon-32x32.png"></a></div>
 <h2>Images by [% info.author %], last updated on [% info.updated %]</h2>
 <div id="navcontainer">
 <div id="thumbs">
