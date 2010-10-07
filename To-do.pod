@@ -10,6 +10,10 @@ Potentially do this by just adding/removing a class from the focused image
 
 =item *
 
+Make thumbnails hideable for slideshow, optionally
+
+=item *
+
 Calculate the #thumbs width better
 
 =item *
