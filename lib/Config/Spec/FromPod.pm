@@ -50,7 +50,7 @@ that uses it.
 
 A minimal config entry looks like this
 
-  =head2 C<< item ITEM >>
+  =head2 C<< item ARG >>
   
   Label
   
@@ -58,14 +58,52 @@ A minimal config entry looks like this
 
 This will result in the following data structure:
 
-  ITEM => {
-      name =>  'ITEM',
+  item => {
+      name =>  'item',
+      desc' => 'Item description',
       label => 'Label',
-      spec  => XXX,
+      arg_count' => 1
+      spec  => 'ARG',
       desc  => 'Item description',
+      repeat' => undef,
+      default' => undef,
   }
 
 A full-blown config entry looks like this:
+
+    =head2 C<< theme DIR >>
+
+    Theme
+
+    Specifies the theme directory to use. You can use a themepack (.tar.gz)
+    or a directory.
+
+    Example:
+
+      theme 'fancy.tar.gz'
+
+    May appear only once.
+
+    =for config
+        repeat  => 1,
+        default => 'plain',
+
+This will result in the following data structure:
+
+  theme => {
+          name =>  'theme',
+          desc => "Specifies the theme directory to use. You can use a themepack (.tar.gz)
+  or a directory.
+  Example:
+    theme 'fancy.tar.gz'
+  May appear only once.",
+          label => 'Theme',
+          arg_count => 1,
+          spec  => 'DIR',
+          repeat => 1,
+          default => 'plain',
+      },
+    };
 
 =cut
 
