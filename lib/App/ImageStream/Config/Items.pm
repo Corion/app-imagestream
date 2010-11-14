@@ -8,15 +8,12 @@ App::ImageStream::Config::Items - metadata on config items
 
 =head1 SYNOPSIS
 
-This declares a list of configuration items together with their
-internal name and the type and number of arguments.
-
-  my $item = parse_config_item();
-  if (not exists $App::ImageStream::Config::Items::item{$item}) {
-      warn "Unknown config item '$item'";
-  }
-
-Defaults are currently not specified.
+  use App::ImageStream::Config::Items;
+  use App::ImageStream::Config::Getopt;
+  App::ImageStream::Config::Getopt::get_options(
+      \%App::ImageStream::Config::Items::items,
+      @ARGV
+  ) or die "Bad command line arguments";
 
 =cut
 

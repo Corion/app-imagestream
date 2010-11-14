@@ -7,6 +7,15 @@ use Getopt::Long;
 
 App::ImageStream::Config::Getopt - get command line options from a spec
 
+=head1 SYNOPSIS
+
+  use App::ImageStream::Config::Items;
+  use App::ImageStream::Config::Getopt;
+  App::ImageStream::Config::Getopt::get_options(
+      \%App::ImageStream::Config::Items::items,
+      @ARGV
+  ) or die "Bad command line arguments";
+
 =cut
 
 sub get_options {
