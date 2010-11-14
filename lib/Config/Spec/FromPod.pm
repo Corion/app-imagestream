@@ -8,7 +8,7 @@ use Carp qw(croak);
 
 =head1 NAME
 
-Config::FromPod - generate configuration metadata from well-formatted Pod
+Config::FromPod - parse configuration metadata from well-formatted Pod
 
 =head1 SYNOPSIS
 
@@ -38,6 +38,14 @@ Config::FromPod - generate configuration metadata from well-formatted Pod
     #warn Dumper %items;
     
     1;
+
+This declares a list of configuration items together with their
+internal name and the type and number of arguments.
+
+  %My::App::Config::items = parse_config_item($config_spec);
+  if (not exists $My::App::Configitems{$item}) {
+      warn "Unknown config item '$item'";
+  }
 
 =head1 RATIONALE
 
