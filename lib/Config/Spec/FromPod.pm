@@ -46,6 +46,27 @@ as pod and directly generates the metadata structure from the documentation.
 This means that your documentation will not go out of sync with the code
 that uses it.
 
+=head1 FORMAT
+
+A minimal config entry looks like this
+
+  =head2 C<< item ITEM >>
+  
+  Label
+  
+  Item description
+
+This will result in the following data structure:
+
+  ITEM => {
+      name =>  'ITEM',
+      label => 'Label',
+      spec  => XXX,
+      desc  => 'Item description',
+  }
+
+A full-blown config entry looks like this:
+
 =cut
 
 sub parse_pod_config {

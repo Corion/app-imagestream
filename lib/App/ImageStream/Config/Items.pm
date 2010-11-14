@@ -1,5 +1,6 @@
 package App::ImageStream::Config::Items;
 use strict;
+use Config::Spec::FromPod qw(parse_pod_config);
 
 =head1 NAME
 
@@ -27,6 +28,9 @@ $config_raw = <<'=cut';
 
 =head2 C<< output DIR >>
 
+=for config
+    repeat  => 1,
+
 Output directory
 
 Specifies the output directory into which the output will be written.
@@ -36,6 +40,7 @@ Example:
   output 'C:/ImageStream/';
 
 May appear only once.
+
 
 =head2 C<< theme DIR >>
 
@@ -51,7 +56,7 @@ Example:
 May appear only once.
 
 =for config
-    once => 1,
+    repeat  => 1,
     default => 'plain',
 
 =head2 C<< collect DIR >>
@@ -198,26 +203,6 @@ Example:
   jobs 4
 
 =cut
-
-sub parse_pod_config {
-    map {
-        /^=head2 C<< (\w+) (.*) >>\s+(\w.*)\n(.*)$/ms
-            or die "Malformed config item '$_'";
-        my ($name,$spec,$label,$desc) = ($1,$2,$3,$4);
-        my $count =()= ($spec =~ m/,/g);
-        $count++;
-        $name => {
-            name      => $name,
-            spec      => $spec,
-            label     => $label,
-            desc      => $desc,
-            arg_count => $count,
-        },
-    }
-    grep /^=head2/, 
-    split /(?==head2)/,
-    shift
-};
 
 # Parse the config items from the documentation
 %items = parse_pod_config( $config_raw );
