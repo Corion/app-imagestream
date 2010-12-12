@@ -17,11 +17,17 @@ WriteMakefile1(
     'NAME'          => 'App::ImageStream',
     'LICENSE'       => 'perl',
     'VERSION_FROM'  => 'lib/App/ImageStream.pm', # finds $VERSION
-    'PREREQ_PM'     => { 'threads' => 2.11, # To defend against "invalid value for shared scalar"
-                        'Thread::Queue' => 1.81,
+    'PREREQ_PM'     => { #'threads' => 1.81, # To defend against "invalid value for shared scalar"
+                         #'Thread::Queue' => 1.81,
                         'Decision::Depends' => 0,
                         'Path::Class' => 0,
+                        'XML::Atom::SimpleFeed' => 0,
+                        'XML::RSS::SimpleGen' => 0,
                         'Imager' => 0,
+                        'Image::ExifTool' => 0,
+                        'Image::Thumbnail' => 0,
+                        'Image::Info' => 0,
+                        'DateTime' => 0,
                       }, # e.g., Module::Name => 1.1
     ABSTRACT_FROM   => 'lib/App/ImageStream.pm', # retrieve abstract from module
     AUTHOR          => 'Max Maischein <corion@cpan.org>',
