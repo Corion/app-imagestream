@@ -6,6 +6,6 @@ App::ImageStream - generate a slideshow of recent images from your harddisk
 
 =cut
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 1;
