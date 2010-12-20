@@ -24,7 +24,7 @@ BEGIN {
 
 use vars qw'%thumbnail_handlers $cfg';
 
-# Make these override $cfg
+# XXX Make these override $cfg
 my ($ok,$opt_commandline) = App::ImageStream::Config::Getopt->get_options(
     \%App::ImageStream::Config::Items::items,
     'f|force' => \my $force,
