@@ -7,7 +7,7 @@ use Carp qw(croak);
 
 =head1 NAME
 
-Config::FromPod - parse configuration metadata from well-formatted Pod
+Config::Spec::FromPod - parse configuration metadata from well-formatted Pod
 
 =head1 SYNOPSIS
 

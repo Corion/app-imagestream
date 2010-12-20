@@ -1,6 +1,5 @@
 package App::ImageStream::Config::Getopt;
 use strict;
-#use Path::Class;
 use Getopt::Long;
 
 =head1 NAME
