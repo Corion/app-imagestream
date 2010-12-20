@@ -39,6 +39,14 @@ Config::Gitlike configuration instead or in addition to the DSL
 
 =item *
 
+Move the config cascade into one module
+
+=item *
+
+Move the meat of the program into App::ImageStream
+
+=item *
+
 Automated upload via WebDAV / SCP / tar+ssh+untar / copy / rsync
 (also see L<App::Koi>)
 
