@@ -1,8 +1,7 @@
 package Config::Spec::FromPod;
 use strict;
 use vars qw(@ISA @EXPORT_OK);
-require Exporter;
-@ISA='Exporter';
+use Exporter 'import';
 @EXPORT_OK = qw(parse_pod_config);
 use Carp qw(croak);
 
