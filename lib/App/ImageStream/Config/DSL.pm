@@ -14,6 +14,9 @@ sub parse_config {
     
     my $result = {};
     
+    # XXX This should respect the config-cascade
+    # XXX This should respect repeat counts
+    
     my %handler;
     for my $item (values %$spec) {
         my $n = $item->{name};

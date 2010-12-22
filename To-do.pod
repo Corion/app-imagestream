@@ -43,6 +43,11 @@ Move the config cascade into one module
 
 =item *
 
+The config cascade needs a common "set-config-item-unless-it-exists"
+handler. Most specific to least specific.
+
+=item *
+
 Move the meat of the program into App::ImageStream
 
 =item *

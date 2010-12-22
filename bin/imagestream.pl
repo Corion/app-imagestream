@@ -13,7 +13,8 @@ use App::ImageStream::List;
 use App::ImageStream::Image;
 use DateTime;
 use DateTime::Duration;
-#use Data::Dumper;
+use Hash::Merge;
+use Data::Dumper;
 
 use vars qw($VERSION);
 $VERSION = '0.02';
@@ -22,9 +23,31 @@ BEGIN {
     ${^WIN32_SLOPPY_STAT} = 1;
 }
 
-use vars qw'%thumbnail_handlers $cfg';
+use vars qw'%thumbnail_handlers';
 
-# XXX Make these override $cfg
+Hash::Merge::specify_behavior( 
+    {
+        'SCALAR' => {
+            'SCALAR' => sub { warn Dumper \@_; $_[0] },
+            'ARRAY'  => sub { 0+@{$_[0]} ? $_[0] : $_[1] },
+            'HASH'   => sub { warn Dumper \@_; $_[0] },
+        },
+        'ARRAY' => {
+            'SCALAR' => sub { warn Dumper \@_; $_[0] },
+            'ARRAY'  => sub { 0+@{$_[0]} ? $_[0] : $_[1] },
+            'HASH'   => sub { warn Dumper \@_; $_[0] },
+        },
+        'HASH' => {
+            'SCALAR' => sub { warn Dumper \@_; $_[0] },
+            'ARRAY'  => sub { 0+@{$_[0]} ? $_[0] : $_[1] },
+            'HASH'   => sub { Hash::Merge::_merge_hashes( $_[0], $_[1] ) },
+        }, 
+    }
+    => 'KEEP_LEFT'
+);
+
+my $merge = Hash::Merge->new('KEEP_LEFT');
+# XXX Make these override $cfg, that is, respect the config cascade
 my ($ok,$opt_commandline) = App::ImageStream::Config::Getopt->get_options(
     \%App::ImageStream::Config::Items::items,
     'f|force' => \my $force,
@@ -32,10 +55,11 @@ my ($ok,$opt_commandline) = App::ImageStream::Config::Getopt->get_options(
 );
 $config ||= 'imagestream.cfg';
 
-$cfg = App::ImageStream::Config::DSL->parse_config_file(
+my $opt_file = App::ImageStream::Config::DSL->parse_config_file(
     \%App::ImageStream::Config::Items::items,
     $config,
 );
+my $cfg = $merge->merge( $opt_commandline, $opt_file );
 
 my $inkscape = $cfg->{inkscape}->[0] || 'C:\\Programme\\Inkscape\\inkscape.exe';
 
