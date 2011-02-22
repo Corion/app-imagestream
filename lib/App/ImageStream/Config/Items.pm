@@ -179,6 +179,10 @@ Example:
 
 =head2 C<< inkscape PATH >>
 
+=for config
+    repeat  => 1,
+    default => 'C:\\Programme\\Inkscape\\inkscape.exe',
+
 Path to your Inkscape executable
 
 This is used to locate the Inkscape program, which is needed to

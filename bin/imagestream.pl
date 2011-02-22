@@ -61,7 +61,7 @@ my $opt_file = App::ImageStream::Config::DSL->parse_config_file(
 );
 my $cfg = $merge->merge( $opt_commandline, $opt_file );
 
-my $inkscape = $cfg->{inkscape}->[0] || 'C:\\Programme\\Inkscape\\inkscape.exe';
+my $inkscape = $cfg->{inkscape}->[0];
 
 Decision::Depends::Configure({ Force => $force });
 
