@@ -28,6 +28,8 @@ WriteMakefile1(
                         'Image::Thumbnail' => 0,
                         'Image::Info' => 0,
                         'DateTime' => 0,
+                        'File::HomeDir' => 0, # for the config system
+                        'List::Util' => 0, # for reduce()
                       }, # e.g., Module::Name => 1.1
     ABSTRACT_FROM   => 'lib/App/ImageStream.pm', # retrieve abstract from module
     AUTHOR          => 'Max Maischein <corion@cpan.org>',
