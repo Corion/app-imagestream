@@ -7,17 +7,17 @@ use List::MoreUtils qw(zip);
 use Decision::Depends;
 use File::Temp qw( tempfile );
 use App::ImageStream::Config::Items;
-use App::ImageStream::Config::DSL;
-use App::ImageStream::Config::Getopt;
+use Config::Cascade;
 use App::ImageStream::List;
 use App::ImageStream::Image;
 use DateTime;
 use DateTime::Duration;
 use Hash::Merge;
+use List::Util 'reduce';
 use Data::Dumper;
 
 use vars qw($VERSION);
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 BEGIN {
     ${^WIN32_SLOPPY_STAT} = 1;
@@ -25,41 +25,17 @@ BEGIN {
 
 use vars qw'%thumbnail_handlers';
 
-Hash::Merge::specify_behavior( 
-    {
-        'SCALAR' => {
-            'SCALAR' => sub { warn Dumper \@_; $_[0] },
-            'ARRAY'  => sub { 0+@{$_[0]} ? $_[0] : $_[1] },
-            'HASH'   => sub { warn Dumper \@_; $_[0] },
-        },
-        'ARRAY' => {
-            'SCALAR' => sub { warn Dumper \@_; $_[0] },
-            'ARRAY'  => sub { 0+@{$_[0]} ? $_[0] : $_[1] },
-            'HASH'   => sub { warn Dumper \@_; $_[0] },
-        },
-        'HASH' => {
-            'SCALAR' => sub { warn Dumper \@_; $_[0] },
-            'ARRAY'  => sub { 0+@{$_[0]} ? $_[0] : $_[1] },
-            'HASH'   => sub { Hash::Merge::_merge_hashes( $_[0], $_[1] ) },
-        }, 
-    }
-    => 'KEEP_LEFT'
-);
-
-my $merge = Hash::Merge->new('KEEP_LEFT');
-# XXX Make these override $cfg, that is, respect the config cascade
-my ($ok,$opt_commandline) = App::ImageStream::Config::Getopt->get_options(
+my $cfg = Config::Cascade->collect(
     \%App::ImageStream::Config::Items::items,
-    'f|force' => \my $force,
-    'c|config' => \my $config,
-);
-$config ||= 'imagestream.cfg';
+    
+    config_default => 'imagestream.cfg',
+    # config_file => 'imagestream.cfg',
+    env => 'IMAGESTREAM_',
 
-my $opt_file = App::ImageStream::Config::DSL->parse_config_file(
-    \%App::ImageStream::Config::Items::items,
-    $config,
+    getopt => {
+        'f|force' => \my $force,
+    },
 );
-my $cfg = $merge->merge( $opt_commandline, $opt_file );
 
 my $inkscape = $cfg->{inkscape}->[0];
 
