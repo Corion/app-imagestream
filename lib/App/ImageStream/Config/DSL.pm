@@ -66,7 +66,7 @@ sub parse_config_file {
     my ($package,$spec,$fn) = @_;
     my $file = file($fn);
     my $content = $file->slurp;
-    $package->parse_config($spec,$content,$fn);
+    $package->parse_config($spec,$content,$fn,$fn);
 };
 
 1;
