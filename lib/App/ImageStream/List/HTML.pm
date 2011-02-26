@@ -14,7 +14,7 @@ sub generate {
     });
     
     my $r = \my $result;
-    $t->process('templates/plain/imagestream.html',
+    $t->process(sprintf( 'templates/%s/imagestream.html', $info->{theme}),
        { info => $info, items => \@items },
        $r)
        or die "Error while generating HTML: " . $t->error;
