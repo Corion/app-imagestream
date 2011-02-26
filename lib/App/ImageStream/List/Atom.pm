@@ -9,7 +9,7 @@ use vars qw($VERSION);
 $VERSION = '0.01';
 
 sub generate {
-    my ($package,$info,@items) = @_;
+    my ($package,$info,$template,@items) = @_;
     
     my $base_url = $info->{base}     || 'http://datenzoo.de/gallery';
     my $feed_url = $info->{feed_url} || "${base_url}/atom";

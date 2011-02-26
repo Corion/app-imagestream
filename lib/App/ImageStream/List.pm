@@ -25,14 +25,13 @@ from the old file.
 =cut
 
 sub create {
-    my ($package,$type, $file, $config, @items) = @_;
+    my ($package,$type, $file, $template, $config, @items) = @_;
     my $old = '';
     
     $old = file($file)->slurp(iomode => '<:raw')
         if (-f $file);
     
-    # XXX Make configurable
-    my $base_url = $config->{ base }->[0] || 'http://datenzoo.de/image_stream';
+    my $base_url = $config->{ base }->[0];
     my $feed_url = "${base_url}/" . $file->basename;
     $feed_url =~ s/\.(\w+)$//;
     my $updated  = strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
@@ -41,7 +40,7 @@ sub create {
         rss  => "$feed_url.rss",
         html => "$feed_url.html",
     };
-    my $theme = $config->{theme}->[0] || 'plain';
+    my $theme = $config->{theme}->[0];
     
     my $feedinfo = {
         title   => $config->{title}->[0] || 'My image feed',
@@ -58,7 +57,7 @@ sub create {
     };
     
     my $generator = $types{$type};
-    my $new = $generator->generate($feedinfo, @items);
+    my $new = $generator->generate($feedinfo, $template, @items);
     
     if ($old ne $new) {
         open my $out, '>', $file
