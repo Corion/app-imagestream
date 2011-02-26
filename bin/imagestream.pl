@@ -14,6 +14,8 @@ use DateTime;
 use DateTime::Duration;
 use Hash::Merge;
 use Data::Dumper;
+use Archive::Tar;
+use Archive::Dir;
 
 use vars qw($VERSION);
 $VERSION = '0.03';
@@ -209,13 +211,27 @@ status 2, sprintf "Created %d thumbnails in %d seconds (%d/s)", 0+@selected, $ta
 @images = (); # discard the remaining images, if any, to free up some more memory
 
 status 1, sprintf "Found %d images", scalar @selected;
+my $theme = $cfg->{theme}->[0];
+if (-d "templates/$theme") {
+    $theme = Archive::Dir->new("templates/$theme")
+} elsif ($theme =~ /(?:\.tar(\.gz)?|\.tgz)$/i) {
+    $theme = Archive::Tar->new("templates/$theme")
+} else {
+    die "Can't find theme '$theme'";
+};
 for my $format (qw(atom rss html)) {
+    my $template;
+    if ($theme->contains_file("imagestream.$format")) {
+        $template = $theme->get_content("imagestream.$format");
+    };
     App::ImageStream::List->create(
         $format => file( @{ $cfg->{ output } }, "imagestream.$format" ),
+        $template,
         $cfg,
         @selected
     );
 }
+# copy all other files from the theme
 
 status 2, sprintf "Done (%d seconds)", time() - $^T;
 
