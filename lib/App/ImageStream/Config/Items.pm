@@ -163,6 +163,9 @@ Example:
 
 =head2 C<< base URL >>
 
+=for config
+    default => 'http://datenzoo.de/image_stream',
+
 Base URL under which the gallery+feed can be reached
 
 Example:
