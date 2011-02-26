@@ -72,15 +72,16 @@ sub collect_images {
 
 sub create_thumbnail_sizes {
     my ($info,$output_directory,$rotate,$sizes) = @_;
-    my $i;
-    for my $s (@$sizes) {
+    my $cache;
+    for my $s (reverse sort @$sizes) { # create largest thumbnail first
         my $thumbname = file( $output_directory, $info->thumbnail_name( $s ));
         warn "$info->{file} generates empty thumb"
             if $thumbname eq "";
         
         if (test_dep( -target => "$thumbname", -depend => $info->{file}->stringify )) {
-            # XXX The svg/Imager handler dispatch should go here
-            $i = $info->create_thumbnail($thumbname,$rotate,$s,$i);
+            # XXX The svg/bitmap handler dispatch should go here
+            #warn "Creating thumbnail  $thumbname " . ($info->{blob} ? "from blob" : "");
+            $cache = $info->create_thumbnail($thumbname,$rotate,$s,$cache);
         } else {
             $info->set_thumbnail_info($thumbname,$s);
         }
