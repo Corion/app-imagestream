@@ -174,6 +174,7 @@ my $last_time = DateTime->from_epoch( epoch => 1 );
 my $distance = DateTime::Duration->new( hours => 5  );
 my $ref_date;
 
+my $start = time;
 while (@images
          and ($images[0]->{mtime} > $cutoff or $cfg->{minimum}->[0] > @selected)) {
     my $info = shift @images;
