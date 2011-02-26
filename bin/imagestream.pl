@@ -188,7 +188,6 @@ while (@images
     my $this_distance = ($capture_date - $last_time);
     if ($dt_reference+$this_distance > $dt_reference+$distance) {
         $ref_date = $capture_date->strftime('%Y-%m-%d');
-        #warn $ref_date;
         $last_time = $capture_date->clone;
     };
     $last_time = $capture_date;
