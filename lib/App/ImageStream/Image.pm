@@ -78,8 +78,6 @@ sub create_thumbnail {
             quality   => 95,
             size      => $size,
             outputpath => $thumbname,
-            #create    => 1,
-            #CHAT => 1,
         ) or warn "Couldn't create thumbnail";
     };
     $t->{outputpath} = $thumbname;
