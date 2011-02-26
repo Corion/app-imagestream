@@ -101,14 +101,7 @@ sub extract_thumbnail_svg {
         or warn "Couldn't run [$cmd]: $!/$?";
     
     # create the thumbnail(s)
-    # XXX Class::Path doesn't support binmode on ->slurp :-(
-    my $blob = do { 
-                    local $/;
-                    open my $fh, $tempfile
-                        or warn "Couldn't read '$tempfile'";
-                    binmode $fh;
-                    <$fh>
-                  };
+    my $blob = $info->{file}->slurp(iomode => '<:raw');
     $info->{blob} = \$blob;
     $info->{blob_type} = 'png';
     unlink $tempfile

@@ -28,7 +28,7 @@ sub create {
     my ($package,$type, $file, $config, @items) = @_;
     my $old = '';
     
-    $old = file($file)->slurp
+    $old = file($file)->slurp(iomode => '<:raw')
         if (-f $file);
     
     # XXX Make configurable

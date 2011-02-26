@@ -20,7 +20,7 @@ WriteMakefile1(
     'PREREQ_PM'     => { #'threads' => 1.81, # To defend against "invalid value for shared scalar"
                          #'Thread::Queue' => 1.81,
                         'Decision::Depends' => 0,
-                        'Path::Class' => 0,
+                        'Path::Class' => 0.23, # fixes ->slurp on Win32
                         'XML::Atom::SimpleFeed' => 0,
                         'XML::RSS::SimpleGen' => 0,
                         'Imager' => 0,

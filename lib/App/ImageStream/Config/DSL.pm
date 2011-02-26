@@ -65,7 +65,7 @@ sub parse_config {
 sub parse_config_file {
     my ($package,$spec,$fn) = @_;
     my $file = file($fn);
-    my $content = $file->slurp;
+    my $content = $file->slurp(iomode => '<:crlf');
     $package->parse_config($spec,$content,$fn,$fn);
 };
 
