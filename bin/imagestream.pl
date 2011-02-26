@@ -40,6 +40,13 @@ my $inkscape = $cfg->{inkscape}->[0];
 
 Decision::Depends::Configure({ Force => $force });
 
+sub status ($$) {
+    my ($level,$message) = @_;
+    if ($level <= $cfg->{verbose}->[0]) {
+        print "$message\n";
+    };
+};
+
 sub collect_images {
     my ($search,$reject) = @_;
     my @images;
@@ -49,8 +56,7 @@ sub collect_images {
             if (-d) {
                 $File::Find::prune = 1;
             };
-            # XXX Make rejection message/verbosity configurable
-            warn "Rejecting '$File::Find::name'\n";
+            status 3, "Rejecting '$File::Find::name'";
         } else {
             push @images, file($File::Find::name)
                 if (-f $File::Find::name);
@@ -105,7 +111,7 @@ sub extract_thumbnail_svg {
     $info->{blob} = \$blob;
     $info->{blob_type} = 'png';
     unlink $tempfile
-        or warn "Couldn't remove temporary file '$tempfile'\n";
+        or status 1, "Couldn't remove temporary file '$tempfile'";
 
     create_thumbnail_sizes($info,$output_directory,0,$sizes);    
 };
@@ -114,13 +120,11 @@ sub create_thumbnail {
     # XXX Should we use only squares and cut?
     # Or is this just a problem of the CSS / Slideshow / Templates?
     my ($info,$output_directory,$sizes) = @_;
-    $sizes ||= [160];
+    $sizes ||= [160]; # XXX Do we still want this? App::ImageStream::Config::Defaults has these
     
     if (my $handler = $thumbnail_handlers{ $info->{extension} }) {
-        #warn $info->{file} . "(svg)";
         $handler->($info,$output_directory,$sizes);
     } else {
-        #warn $info->{file} . "(file)";
         create_thumbnail_sizes($info,$output_directory,$info->{rotate},$sizes);
     }
 }
@@ -128,6 +132,7 @@ sub create_thumbnail {
 sub create_thumbnails {
     my ($output_directory, $sizes, @files) = @_;
     
+    my $start = time;
     for my $info (@files) {
         create_thumbnail($info,$output_directory,$sizes);
         $info->release_metadata;
@@ -157,7 +162,7 @@ my @selected;
 
 # To reduce IO, we only read the metadata of images that pass the
 # other criteria. This prevents us from using grep ...
-warn sprintf "Filtering %d images\n", scalar @images;
+status 1, sprintf "Filtering %d images", scalar @images;
 # XXX Make status message out of this warning
 
 my $cutoff = time() - $cfg->{cutoff}->[0] * 24 * 3600;
@@ -199,13 +204,17 @@ while (@images
         # Save some memory
         $info->release_metadata();
     } else {
+        status 3, "Rejected $info->{file} (tagged)";
         # XXX verbose: output rejection status
     }
 }
+my $taken = (time - $start) || 1;
+my $rate = 0+@selected / $taken;
+status 2, sprintf "Created %d thumbnails in %d seconds (%d/s)", 0+@selected, $taken, $rate;
 
 @images = (); # discard the remaining images, if any, to free up some more memory
 
-warn sprintf "Found %d images\n", scalar @selected;
+status 1, sprintf "Found %d images", scalar @selected;
 for my $format (qw(atom rss html)) {
     App::ImageStream::List->create(
         $format => file( @{ $cfg->{ output } }, "imagestream.$format" ),
@@ -213,5 +222,7 @@ for my $format (qw(atom rss html)) {
         @selected
     );
 }
+
+status 2, sprintf "Done (%d seconds)", time() - $^T;
 
 # XXX upload /rsync the complete output directory

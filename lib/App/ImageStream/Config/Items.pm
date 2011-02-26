@@ -203,6 +203,20 @@ Example:
 
   jobs 4
 
+=head2 C<< verbose LEVEL >>
+
+=for config
+    default => 1,
+
+Output progress level
+
+This is the level of verbosity. 0 means no output except in error cases.
+Default is 1. Maximum is 99.
+
+Example:
+
+  verbose 2
+
 =cut
 
 # Parse the config items from the documentation
