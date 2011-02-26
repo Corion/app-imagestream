@@ -86,8 +86,8 @@ Precedence (highest to lowest):
 
   command line               (ok)
   directory config file / -f (ok)
-  ~/config                   (missing)
-  /etc/config                (missing)
+  ~/config                   (implemented but untested)
+  /etc/config                (implemented but untested)
 
 =back
 
