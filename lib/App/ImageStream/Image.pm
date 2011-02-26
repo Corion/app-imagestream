@@ -35,41 +35,60 @@ sub new {
 };
 
 sub create_thumbnail {
-    my ($self,$thumbname,$rotate,$size,$i) = @_;
-    # XXX We're Imager-specific here
-    if (! $i) {
-        $i = Imager->new;
+    my ($self,$thumbname,$rotate,$size,$t) = @_;
+    
+    # Also use this to either handle PNG or to convert PNG to JPeG too
+    # when using backends other than Imager
+    if ($rotate and not $self->{rotated}++) {
+        my $i = Imager->new;
         if ($self->{blob}) {
             $i = $i->read(data => ${$self->{blob}}, type => $self->{blob_type}, )
                 or warn sprintf "%s: %s", $self->{file}, $i->errstr;
         } else {
-            my $t = $i->read(file => $self->{file}->stringify)
+            $i = $i->read(file => $self->{file}->stringify)
                 or warn sprintf "%s: %s", $self->{file}, $i->errstr;
-            if (! $t) {
-                return
-            }
-            $i = $t;
         };
-        if ($i) {
-            $i = $i->rotate(degrees => $rotate) if $rotate;
-        } else {
-            return
-        }
+        $i = $i->rotate(degrees => $rotate);
+        $i->write( data => \my $blob, type => 'jpeg')
+            or die "Cannot write: " . $i->errstr;
+        $self->{blob} = \$blob;
+        $self->{blob_type} = 'jpeg';
     };
     
-    my $t = Image::Thumbnail->new(
-        module     => 'Imager',
-        object     => $i,
-        #input      => $self->{blob} || "$self->{file}",
-        size       => $size,
-        quality    => 95,
-        outputpath => $thumbname,
-        create => 1,
-    );
-    
+    $t ||= do {
+        # Damn - Image::Thumbnail can't use the Imager backend
+        # with in-memory data :-(
+        # But we use it
+        # because Imager has nicer quality than Image::Epeg for mediocre-size images
+        my $i = Imager->new();
+        if ($self->{blob}) {
+            $i->read( data => ${ $self->{blob} }, type => $self->{blob_type} );
+        } else {
+            $i->read( file => $self->{file}->stringify );
+            $i->write( data => \my $blob, type => 'jpeg')
+                or die "Cannot write: " . $i->errstr;
+            $self->{blob} = \$blob;
+            $self->{blob_type} = 'jpeg';
+        };
+        
+        $t = Image::Thumbnail->new(
+            #input     => ($self->{blob} || "$self->{file}"),
+            object => $i,
+            #inputpath => ($self->{blob} || "$self->{file}"), # Image::Epeg path uses {inputpath} even for in-memory files..
+            quality   => 95,
+            size      => $size,
+            outputpath => $thumbname,
+            #create    => 1,
+            #CHAT => 1,
+        ) or warn "Couldn't create thumbnail";
+    };
+    $t->{outputpath} = $thumbname;
+    $t->{size} = $size,
+    $t->create;
+        
     $self->set_thumbnail_info( $thumbname, $size, $t->{x}, $t->{y} );
     
-    return $i;
+    return $t;
 }
 
 sub set_thumbnail_info {
