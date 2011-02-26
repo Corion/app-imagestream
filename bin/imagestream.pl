@@ -13,7 +13,6 @@ use App::ImageStream::Image;
 use DateTime;
 use DateTime::Duration;
 use Hash::Merge;
-use List::Util 'reduce';
 use Data::Dumper;
 
 use vars qw($VERSION);
