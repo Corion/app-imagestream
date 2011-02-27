@@ -8,14 +8,12 @@ use Decision::Depends;
 use File::Temp qw( tempfile );
 use App::ImageStream::Config::Items;
 use Config::Cascade;
+use App::ImageStream;
 use App::ImageStream::List;
 use App::ImageStream::Image;
 use DateTime;
 use DateTime::Duration;
-use Hash::Merge;
 use Data::Dumper;
-use Archive::Tar;
-use Archive::Dir;
 
 use vars qw($VERSION);
 $VERSION = '0.03';
