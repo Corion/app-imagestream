@@ -219,11 +219,14 @@ if (-d "templates/$theme") {
 } else {
     die "Can't find theme '$theme'";
 };
+
+my %seen;
 for my $format (qw(atom rss html)) {
     my $template;
     if ($theme->contains_file("imagestream.$format")) {
         $template = $theme->get_content("imagestream.$format");
     };
+    $seen{ "imagestream.$format" }++;
     App::ImageStream::List->create(
         $format => file( @{ $cfg->{ output } }, "imagestream.$format" ),
         $template,
@@ -231,7 +234,15 @@ for my $format (qw(atom rss html)) {
         @selected
     );
 }
+
 # copy all other files from the theme
+for my $file ($theme->list_files) {
+    next
+        if $seen{ $file };
+    my $target = file(@{ $cfg->{ output } }, $file );
+    status 1, "Copying $file";
+    $theme->extract_file($file, $target);
+};
 
 status 2, sprintf "Done (%d seconds)", time() - $^T;
 
