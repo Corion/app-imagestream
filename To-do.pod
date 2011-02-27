@@ -40,11 +40,6 @@ Turn image conversion/thumbnail generation into plugins
 
 =item *
 
-Have HTML themes in C<.tar.gz> files. If in doubt, extract
-a theme into a tempdir and use that tempdir as theme directory.
-
-=item *
-
 Turn image list into "topical" list grouped by date, like App::PhotoImport does
 
 =back
