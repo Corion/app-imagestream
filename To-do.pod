@@ -14,10 +14,6 @@ Make thumbnails hideable for slideshow, optionally
 
 =item *
 
-Calculate the #thumbs width better
-
-=item *
-
 Move the image names into alt-captions. Display the image name and metadata
 only with the large image, if JS is enabled.
 
