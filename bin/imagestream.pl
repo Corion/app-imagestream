@@ -207,38 +207,12 @@ status 2, sprintf "Created %d thumbnails in %d seconds (%d/s)", 0+@selected, $ta
 @images = (); # discard the remaining images, if any, to free up some more memory
 
 status 1, sprintf "Found %d images", scalar @selected;
-my $theme = $cfg->{theme}->[0];
-if (-d "templates/$theme") {
-    $theme = Archive::Dir->new("templates/$theme")
-} elsif ($theme =~ /(?:\.tar(\.gz)?|\.tgz)$/i) {
-    $theme = Archive::Tar->new("templates/$theme")
-} else {
-    die "Can't find theme '$theme'";
-};
-
-my %seen;
-for my $format (qw(atom rss html)) {
-    my $template;
-    if ($theme->contains_file("imagestream.$format")) {
-        $template = $theme->get_content("imagestream.$format");
-    };
-    $seen{ "imagestream.$format" }++;
-    App::ImageStream::List->create(
-        $format => file( @{ $cfg->{ output } }, "imagestream.$format" ),
-        $template,
-        $cfg,
-        @selected
-    );
-}
-
-# copy all other files from the theme
-for my $file ($theme->list_files) {
-    next
-        if $seen{ $file };
-    my $target = file(@{ $cfg->{ output } }, $file );
-    status 1, "Copying $file";
-    $theme->extract_file($file, $target);
-};
+App::ImageStream->apply_theme(
+    $cfg,
+    App::ImageStream->get_theme($cfg),
+    $cfg->{output}->[0],
+    @selected,
+);
 
 status 2, sprintf "Done (%d seconds)", time() - $^T;
 
