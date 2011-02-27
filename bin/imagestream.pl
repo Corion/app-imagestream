@@ -38,8 +38,6 @@ my $cfg = Config::Cascade->collect(
 
 my $inkscape = $cfg->{inkscape}->[0];
 
-Decision::Depends::Configure({ Force => $force });
-
 sub status ($$) {
     my ($level,$message) = @_;
     if ($level <= $cfg->{verbose}->[0]) {
