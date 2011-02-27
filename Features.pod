@@ -34,7 +34,7 @@ Publish thumbnail list as feed (RSS, Atom) and HTML Slideshow/Timeline
 
 =item *
 
-One theme
+Custom themes and themepacks
 
 =item *
 
