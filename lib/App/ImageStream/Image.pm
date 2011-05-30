@@ -62,7 +62,7 @@ sub create_thumbnail {
         # because Imager has nicer quality than Image::Epeg for mediocre-size images
         my $i = Imager->new();
         if ($self->{blob}) {
-            $i->read( data => ${ $self->{blob} }, type => $self->{blob_type} );
+            $i->read( data => ${$self->{blob}}, type => $self->{blob_type} );
         } else {
             $i->read( file => $self->{file}->stringify );
             $i->write( data => \my $blob, type => 'jpeg')

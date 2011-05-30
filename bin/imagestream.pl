@@ -93,14 +93,15 @@ sub extract_thumbnail_svg {
     my ($fh, $tempfile) = tempfile();
     close $fh; # we're on Windows
     my $source = $info->{file};
-
+    
     my $cmd = qq{"$inkscape" -D "--export-png=$tempfile" --export-text-to-path --without-gui "$source"};
     status 7, "Running [$cmd]";
     system($cmd) == 0
         or status 0, "Couldn't run [$cmd]: $!/$?";
     
     # create the thumbnail(s)
-    my $blob = $info->{file}->slurp(iomode => '<:raw');
+    #my $blob = $info->{file}->slurp(iomode => '<:raw');
+    my $blob = file($tempfile)->slurp(iomode => '<:raw');
     $info->{blob} = \$blob;
     $info->{blob_type} = 'png';
     unlink $tempfile
