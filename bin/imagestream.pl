@@ -95,8 +95,9 @@ sub extract_thumbnail_svg {
     my $source = $info->{file};
 
     my $cmd = qq{"$inkscape" -D "--export-png=$tempfile" --export-text-to-path --without-gui "$source"};
+    status 7, "Running [$cmd]";
     system($cmd) == 0
-        or warn "Couldn't run [$cmd]: $!/$?";
+        or status 0, "Couldn't run [$cmd]: $!/$?";
     
     # create the thumbnail(s)
     my $blob = $info->{file}->slurp(iomode => '<:raw');
@@ -126,6 +127,8 @@ sub create_thumbnails {
     
     my $start = time;
     for my $info (@files) {
+        status 6, "Creating thumbnails for $info->{file}";
+        
         create_thumbnail($info,$output_directory,$sizes);
         $info->release_metadata;
     };
@@ -170,6 +173,7 @@ my $start = time;
 while (@images
          and ($images[0]->{mtime} > $cutoff or $cfg->{minimum}->[0] > @selected)) {
     my $info = shift @images;
+    status 5, "Fetching metadata for " . $info->{file};
     $info->fetch_metadata();
     
     # Now, add a "date" tag to all images, grouping together those taken
