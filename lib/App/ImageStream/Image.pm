@@ -181,6 +181,19 @@ sub stat {
     $self
 }
 
+sub sanitize_name {
+    # make uri-sane filenames
+    # XXX Maybe use whatever SocialText used to create titles
+    # XXX If I can't find this, make this into its own module
+    # XXX Also consider Unicode::Romanize / Unicode::Downgrade
+    
+    local $_ = shift;
+    s/['"]//gi;
+    s/[^a-zA-Z0-9.-]/ /gi;
+    s/\s+/_/g;
+    s/_-_/-/g;
+};
+
 sub thumbnail_name {
     my ($self,$size) = @_;
     (my $target = $self->{file}->basename) =~ /(.*)\.\w+$/;
@@ -200,27 +213,18 @@ sub thumbnail_name {
             unless $seen{ $_ }++;
     }
             
-    # make uri-sane filenames
-    # XXX Maybe use whatever SocialText used to create titles
-    # XXX If I can't find this, make this into its own module
-    my $tags = join "_", @tags;
-    $tags =~ s/['"]//gi;
-    $tags =~ s/[^a-zA-Z0-9.-]/ /gi;
-    $tags =~ s/\s+/_/g;
-    $tags =~ s/_-_/-/g;
+    my $tags = sanitize_name( join "_", @tags );
     
     my @parts = qw(file size tags);
     my %parts = (
-        file => $target,
-        size => sprintf( '%04d', $size ),
-        tags => $tags,
+        file => sanitize_name( $target ),
+        size => sanitize_name( sprintf( '%04d', $size )),
+        tags => sanitize_name( $tags ),
     );
     $target = lc( join( "_", @parts{ @parts }) . "." . $extension );
 
     # Clean up the end result
     # This fixes foo_.extension to foo.extension
-
-    $target =~ s/_+/_/g;
     $target =~ s/_+([\W])/$1/g;
 
     $target
