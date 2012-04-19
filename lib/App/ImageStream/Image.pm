@@ -66,7 +66,7 @@ sub create_thumbnail {
         } else {
             $i->read( file => $self->{file}->stringify );
             $i->write( data => \my $blob, type => 'jpeg')
-                or die "Cannot write: " . $i->errstr;
+                or die "Cannot write: " . $i->errstr . sprintf "(from %s)", $self->{file};
             $self->{blob} = \$blob;
             $self->{blob_type} = 'jpeg';
         };
