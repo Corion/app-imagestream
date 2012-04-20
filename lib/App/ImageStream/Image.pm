@@ -192,8 +192,7 @@ sub sanitize_name {
     @_ = unidecode(@_);
     for( @_ ) {
         s/['"]//gi;
-        s/[^a-zA-Z0-9.-]/ /gi;
-        s/\s+/_/g;
+        s/[^a-zA-Z0-9.-]+/_/gi;
         s/-+/-/g;
         s/_(?:-_)+/-/g;
         s/^[-_]+//;
