@@ -15,9 +15,12 @@ lib/App/ImageStream/List/RSS.pm
 lib/Archive/Dir.pm
 lib/Config/Cascade.pm
 lib/Config/Spec/FromPod.pm
+lib/Text/UrlClean.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.skip
+MYMETA.json
+MYMETA.yml
 t/50-documentation.t
 t/50-out-of-band.t
 t/50-plain.t

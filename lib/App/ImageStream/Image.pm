@@ -7,7 +7,7 @@ use Image::Thumbnail;
 use Image::Info qw(image_info dim);
 use POSIX qw(strftime);
 use DateTime;
-use Text::Unidecode;
+use Text::UrlClean;
 
 use vars qw'%rotation';
 
@@ -182,25 +182,6 @@ sub stat {
     $self
 }
 
-sub sanitize_name {
-    # make uri-sane filenames
-    # We assume Unicode on input.
-    # XXX Maybe use whatever SocialText used to create titles
-    # XXX If I can't find this, make this into its own module
-    
-    # First, downgrade to ASCII chars (or transliterate if possible)
-    @_ = unidecode(@_);
-    for( @_ ) {
-        s/['"]//gi;
-        s/[^a-zA-Z0-9.-]+/_/gi;
-        s/-+/-/g;
-        s/_(?:-_)+/-/g;
-        s/^[-_]+//;
-        s/[-_]+$//;
-     };
-    wantarray ? @_ : $_[0];
-};
-
 sub thumbnail_name {
     my ($self,$size) = @_;
     (my $target = $self->{file}->basename) =~ /(.*)\.\w+$/;
@@ -220,13 +201,13 @@ sub thumbnail_name {
             unless $seen{ $_ }++;
     }
             
-    my $tags = sanitize_name( join "_", @tags );
+    my $tags = clean_fragment( join "_", @tags );
 
     # XXX The name constituents could become configurable
     my @parts = qw(file size tags);
 
     my %parts;
-    @parts{ @parts } = sanitize_name( $target, sprintf( '%04d', $size ), $tags );
+    @parts{ @parts } = clean_fragment( $target, sprintf( '%04d', $size ), $tags );
     $target = lc( join( "_", @parts{ @parts }) . "." . $extension );
 
     # Clean up the end result
