@@ -7,6 +7,7 @@ use Image::Thumbnail;
 use Image::Info qw(image_info dim);
 use POSIX qw(strftime);
 use DateTime;
+use Text::Unidecode;
 
 use vars qw'%rotation';
 
@@ -183,16 +184,20 @@ sub stat {
 
 sub sanitize_name {
     # make uri-sane filenames
-    # XXX Maybe use whatever SocialText used to create titles
+    # We assume Unicode on input.
+    # XXX Maybe use whatever SocialText used to create titles
     # XXX If I can't find this, make this into its own module
-    # XXX Also consider Unicode::Romanize / Unicode::Downgrade
     
-    local $_ = shift;
-    s/['"]//gi;
-    s/[^a-zA-Z0-9.-]/ /gi;
-    s/\s+/_/g;
-    s/_-_/-/g;
-    $_
+    # First, downgrade to ASCII chars (or transliterate if possible)
+    @_ = unidecode(@_);
+    for( @_ ) {
+        s!^\s+!!;        s!\s+$!!;
+        s/['"]//gi;
+        s/[^a-zA-Z0-9.-]/ /gi;
+        s/\s+/_/g;
+        s/_-_/-/g;
+    };
+    wantarray ? @_ : $_[0];
 };
 
 sub thumbnail_name {
