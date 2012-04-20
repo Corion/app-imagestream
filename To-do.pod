@@ -150,6 +150,11 @@ Release list-to-feed generator separately on CPAN
 
 =item *
 
+Don't overwrite images by keeping track of target image names
+and count them up if necessary.
+
+=item *
+
 Minify HTML
 
 =back
