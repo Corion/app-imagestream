@@ -80,6 +80,23 @@ Precedence (highest to lowest):
   ~/config                   (implemented but untested)
   /etc/config                (implemented but untested)
 
+=item *
+
+Write C<Config::Find>, which implements the logic for
+locating a config file:
+
+  command line option
+  $ENV setting
+  current directory
+  project directory (as determined by some heuristic)
+  user directory (as determined by File::HomeDir->my_data)
+  machine-wide location (/etc)
+
+Ignore the Registry for the time being.
+
+For "project directory", take the code from
+C<< Padre::ProjectManager->from_file >>.
+
 =back
 
 =head1 Nice-to-have feature list
