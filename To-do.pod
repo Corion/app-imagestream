@@ -14,6 +14,11 @@ Make thumbnails hideable for slideshow, optionally
 
 =item *
 
+Redo the CSS to support different media styles, like phone, tablets etc.
+transparently
+
+=item *
+
 Move the image names into alt-captions. Display the image name and metadata
 only with the large image, if JS is enabled.
 
