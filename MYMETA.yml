@@ -2,7 +2,8 @@
 abstract: 'generate a slideshow of recent images from your harddisk'
 author:
   - 'Max Maischein <corion@cpan.org>'
-build_requires: {}
+build_requires:
+  Exporter: 5
 configure_requires:
   ExtUtils::MakeMaker: 0
 dynamic_config: 0
@@ -19,7 +20,6 @@ no_index:
 requires:
   DateTime: 0
   Decision::Depends: 0
-  Exporter: 5
   File::HomeDir: 0
   Image::ExifTool: 0
   Image::Info: 0

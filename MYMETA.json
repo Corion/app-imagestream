@@ -21,7 +21,9 @@
    },
    "prereqs" : {
       "build" : {
-         "requires" : {}
+         "requires" : {
+            "Exporter" : "5"
+         }
       },
       "configure" : {
          "requires" : {
@@ -32,7 +34,6 @@
          "requires" : {
             "DateTime" : 0,
             "Decision::Depends" : 0,
-            "Exporter" : "5",
             "File::HomeDir" : 0,
             "Image::ExifTool" : 0,
             "Image::Info" : 0,
