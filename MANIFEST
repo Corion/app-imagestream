@@ -24,7 +24,7 @@ MYMETA.yml
 t/50-documentation.t
 t/50-out-of-band.t
 t/50-plain.t
-t/60-sanitizer.t
+t/60-text-urlclean.t
 templates/plain/feed-icon-32x32.png
 templates/plain/imagestream.html
 To-do.pod
