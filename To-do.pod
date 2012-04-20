@@ -149,6 +149,10 @@ Have a local "webserver" to do a trial-run of the RSS/Atom/HTML feed
 
 =item *
 
+Generate face-centered thumbnails from face detection
+
+=item *
+
 Factor out cascade into config-cascade and file-cascade
 
 =item *
