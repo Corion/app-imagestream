@@ -13,13 +13,13 @@ WriteMakefile1(
         },
     },
     BUILD_REQUIRES => {
+                        'Exporter' => 5, # need 'import' feature
     },
     'NAME'          => 'App::ImageStream',
     'LICENSE'       => 'perl',
     'VERSION_FROM'  => 'lib/App/ImageStream.pm', # finds $VERSION
     'PREREQ_PM'     => { #'threads' => 1.81, # To defend against "invalid value for shared scalar"
                          #'Thread::Queue' => 1.81,
-                        'Exporter' => 5, # need 'import' feature
                         'Decision::Depends' => 0,
                         'Path::Class' => 0.23, # fixes ->slurp on Win32
                         'XML::Atom::SimpleFeed' => 0,
