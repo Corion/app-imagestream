@@ -1,0 +1,16 @@
+.cvsignore$
+^.git/
+^.lwpcookies
+^.releaserc
+^blib/
+CVS/
+^pm_to_blib
+.tar.gz$
+.old$
+Thumbs.db$
+^Makefile$
+^cvstest$
+^blibdirs$
+.bak$
+^cover_db/
+^db/
