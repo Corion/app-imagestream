@@ -220,13 +220,12 @@ sub thumbnail_name {
     }
             
     my $tags = sanitize_name( join "_", @tags );
-    
+
+    # XXX The name constituents could become configurable
     my @parts = qw(file size tags);
-    my %parts = (
-        file => sanitize_name( $target ),
-        size => sanitize_name( sprintf( '%04d', $size )),
-        tags => sanitize_name( $tags ),
-    );
+
+    my %parts;
+    @parts{ @parts } = sanitize_name( $target, sprintf( '%04d', $size ), $tags );
     $target = lc( join( "_", @parts{ @parts }) . "." . $extension );
 
     # Clean up the end result
