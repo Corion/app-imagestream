@@ -162,6 +162,10 @@ HTML
 
 =item *
 
+Optionally even inline the thumbnails as DATA URIs
+
+=item *
+
 Look at L<Imager>s file types to learn what we can handle instead of
 deferring blindly
 
