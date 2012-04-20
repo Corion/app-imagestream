@@ -9,6 +9,7 @@ binmode DATA, ':utf8';
 my @tests = map { s!\s+$!!g; [split /\|/] } grep {!/^\s*#/} <DATA>;
 
 push @tests, ["String\nWith\n\nNewlines\r\nEmbedded","String_With_Newlines_Embedded"];
+push @tests, ["String\tWith \t Tabs \tEmbedded","String_With_Tabs_Embedded"];
 push @tests, ["","",'Empty String'];
 
 plan tests => 1+@tests*2;
@@ -28,3 +29,4 @@ Grégory|Gregory
 Ævar Arnfjörð Bjarmason|AEvar_Arnfjord_Bjarmason
 forward/slash|forward_slash
 Ümloud feat. ß|Umloud_feat._ss
+/foo/bar/index.html|foo_bar_index.html|filename with path

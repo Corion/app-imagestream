@@ -191,11 +191,12 @@ sub sanitize_name {
     # First, downgrade to ASCII chars (or transliterate if possible)
     @_ = unidecode(@_);
     for( @_ ) {
-        s!^\s+!!;        s!\s+$!!;
         s/['"]//gi;
         s/[^a-zA-Z0-9.-]/ /gi;
         s/\s+/_/g;
         s/_-_/-/g;
+        s/^_+//g;
+        s/_+$//g;
     };
     wantarray ? @_ : $_[0];
 };
