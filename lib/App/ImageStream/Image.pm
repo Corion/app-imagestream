@@ -192,6 +192,7 @@ sub sanitize_name {
     s/[^a-zA-Z0-9.-]/ /gi;
     s/\s+/_/g;
     s/_-_/-/g;
+    $_
 };
 
 sub thumbnail_name {
