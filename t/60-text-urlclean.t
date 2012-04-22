@@ -3,7 +3,7 @@ use strict;
 use Test::More;
 use Data::Dumper;
 
-use Text::UrlClean;
+use Text::CleanFragment;
 use utf8;
 binmode DATA, ':utf8';
 my @tests = map { s!\s+$!!g; [split /\|/] } grep {!/^\s*#/ && /\S/} <DATA>;

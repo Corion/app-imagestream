@@ -7,7 +7,7 @@ use Image::Thumbnail;
 use Image::Info qw(image_info dim);
 use POSIX qw(strftime);
 use DateTime;
-use Text::UrlClean;
+use Text::CleanFragment;
 
 use vars qw'%rotation';
 

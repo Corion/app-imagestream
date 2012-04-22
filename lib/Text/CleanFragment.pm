@@ -1,4 +1,4 @@
-package Text::UrlClean;
+package Text::CleanFragment;
 use strict;
 use vars qw($VERSION @EXPORT);
 use Exporter qw'import';
@@ -9,7 +9,7 @@ $VERSION = '0.01';
 
 =head1 NAME
 
-Text::UrlClean - clean up text to use as URL fragment
+Text::CleanFragment - clean up text to use as URL fragment or filename
 
 =head1 SYNOPSIS
 
@@ -92,7 +92,7 @@ sub clean_fragment {
     @_ = unidecode(@_);
 
     for( @_ ) {
-        s/['"\x{2019}]//g;      # Eliminate apostrophes
+        tr/['"\x{2019}]//d;     # Eliminate apostrophes
         s/[^a-zA-Z0-9.-]+/_/g;  # Replace all non-ascii by underscores, including whitespace
         s/-+/-/g;               # Squash dashes
         s/_(?:-_)+/-/g;         # Squash _-_ and _-_-_ to -
