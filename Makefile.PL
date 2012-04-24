@@ -31,7 +31,7 @@ WriteMakefile1(
                         'DateTime' => 0,
                         'File::HomeDir' => 0, # for the config system
                         'List::Util' => 0, # for reduce()
-                        'Text::Unidecode' => 0, # to create sanitized URLs
+                        'Text::CleanFragment' => 0, # to create sanitized URLs
                       }, # e.g., Module::Name => 1.1
     ABSTRACT_FROM   => 'lib/App/ImageStream.pm', # retrieve abstract from module
     AUTHOR          => 'Max Maischein <corion@cpan.org>',
