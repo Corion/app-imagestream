@@ -112,6 +112,7 @@ sub extract_thumbnail_svg {
 
 sub create_thumbnail {
     # XXX Should we use only squares and cut?
+    # XXX Consider using the "reddit interesting image section" algorithm for squares
     # Or is this just a problem of the CSS / Slideshow / Templates?
     my ($info,$output_directory,$sizes) = @_;
     $sizes ||= [160]; # XXX Do we still want this? App::ImageStream::Config::Defaults has these
