@@ -4,6 +4,35 @@
 
 =item *
 
+Redo the CSS to support different media styles, like phone, tablets etc.
+transparently
+
+=item *
+
+Add media queries for Nexus 7 (?)
+
+=item *
+
+Add media queries for HDTV (1920x1080)
+
+=item *
+
+Add media queries for iPad mini (?)
+
+=item *
+
+Add media queries for iPad (?)
+
+=item *
+
+Add media queries for iPad 2 (?)
+
+=item *
+
+Add media queries for small phone (?)
+
+=item *
+
 White border around active/current image, together with triangle pointing down
 
 Potentially do this by just adding/removing a class from the focused image
@@ -12,10 +41,7 @@ Potentially do this by just adding/removing a class from the focused image
 
 Make thumbnails hideable for slideshow, optionally
 
-=item *
-
-Redo the CSS to support different media styles, like phone, tablets etc.
-transparently
+Also think about making this depend on the @media query
 
 =item *
 
