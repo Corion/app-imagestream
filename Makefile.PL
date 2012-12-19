@@ -20,6 +20,7 @@ WriteMakefile1(
     'VERSION_FROM'  => 'lib/App/ImageStream.pm', # finds $VERSION
     'PREREQ_PM'     => { #'threads' => 1.81, # To defend against "invalid value for shared scalar"
                          #'Thread::Queue' => 1.81,
+                         'Hash::Merge' => 0, # for Config::Cascade
                         'Decision::Depends' => 0,
                         'Path::Class' => 0.23, # fixes ->slurp on Win32
                         'XML::Atom::SimpleFeed' => 0,
