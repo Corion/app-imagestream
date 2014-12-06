@@ -14,6 +14,7 @@ use vars qw'%rotation';
 BEGIN {
     %rotation = (
         ''                    => 0,
+        'Unknown (0)'         => 0,
         'Horizontal (normal)' => 0,
         'Rotate 90 CW'        => 90,
         'Rotate 270 CW'       => 270,
