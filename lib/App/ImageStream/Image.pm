@@ -36,7 +36,7 @@ sub new {
 };
 
 sub create_thumbnail {
-    my ($self,$thumbname,$rotate,$size,$t) = @_;
+    my ($self,$thumbname,$rotate,$size, $size_name,$t) = @_;
     
     # Also use this to either handle PNG or to convert PNG to JPeG too
     # when using backends other than Imager
@@ -82,24 +82,24 @@ sub create_thumbnail {
         ) or warn "Couldn't create thumbnail";
     };
     $t->{outputpath} = $thumbname;
-    $t->{size} = $size,
+    $t->{size} = $size;
     $t->create;
         
-    $self->set_thumbnail_info( $thumbname, $size, $t->{x}, $t->{y} );
+    $self->set_thumbnail_info( $thumbname, $size, $size_name, $t->{x}, $t->{y} );
     
     return $t;
 }
 
 sub set_thumbnail_info {
-    my ($self,$thumbname,$size,$width,$height) = @_;
+    my ($self,$thumbname,$size,$size_name,$width,$height) = @_;
      $self->{sizes} ||= {};
     
-    if (! exists $self->{sizes}->{$size}) {
+    if (! exists $self->{sizes}->{$size_name}) {
         if (! $width) {
             my $img = image_info("$thumbname");
             ($width,$height) = dim($img);
         };
-        $self->{sizes}->{$size} = {
+        $self->{sizes}->{$size_name} = {
             width  => $width,
             height => $height,
             name   => $thumbname,

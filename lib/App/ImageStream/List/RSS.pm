@@ -19,17 +19,17 @@ sub generate {
     for my $item (@data) {
         my $url_large = join "/", 
                           $base_url,
-                          $item->{sizes}->{640}->{name}->basename
+                          $item->{sizes}->{medium}->{name}->basename
                         ;
         my $url_thumb = join "/", 
                           $base_url,
-                          $item->{sizes}->{160}->{name}->basename
+                          $item->{sizes}->{thumbnail}->{name}->basename
                         ;
         my $title = $item->title;
         my $author = $item->author || $stream_author;
         my $html = encode_entities(<<HTML);
 $author hat ein Bild ver&ouml;ffentlicht:
-<a href="$url_large" title="$title"><img src="$url_thumb" width="$item->{sizes}->{160}->{width}" height="$item->{sizes}->{160}->{height}" alt="$title" /></a>
+<a href="$url_large" title="$title"><img src="$url_thumb" width="$item->{sizes}->{thumbnail}->{width}" height="$item->{sizes}->{thumbnail}->{height}" alt="$title" /></a>
 HTML
         
         $rss->item( 

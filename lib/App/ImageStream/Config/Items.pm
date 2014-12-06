@@ -119,20 +119,21 @@ Example:
 
   exclude_tag 'family';
 
-=head2 C<< size SIZE >>
+=head2 C<< size NAME, SIZE >>
 
 Specify a size of images to be created. The size will specify
 the maximum width and height.
 
 Example:
 
-  size 160;
-  size 1024;
+  size 'thumbnail', 160;
+  size 'medium', 1024;
 
 Default:
 
-  size 160;
-  size 640;
+  size 'thumbnail', 160;
+  size 'medium', 800;
+  size 'large', 1600;
 
 =head2 C<< prefer EXT, EXT >>
 

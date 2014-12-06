@@ -72,16 +72,17 @@ sub create_thumbnail_sizes {
     my ($info,$output_directory,$rotate,$sizes) = @_;
     my $cache;
     for my $s (reverse sort @$sizes) { # create largest thumbnail first
-        my $thumbname = file( $output_directory, $info->thumbnail_name( $s ));
+        my( $size_name, $size )= @$s;
+        my $thumbname = file( $output_directory, $info->thumbnail_name( $size ));
         warn "$info->{file} generates empty thumb"
             if $thumbname eq "";
         
         if (test_dep( -target => "$thumbname", -depend => $info->{file}->stringify )) {
             # XXX The svg/bitmap handler dispatch should go here
-            #warn "Creating thumbnail  $thumbname " . ($info->{blob} ? "from blob" : "");
-            $cache = $info->create_thumbnail($thumbname,$rotate,$s,$cache);
+            #warn "Creating '$size_name' thumbnail $thumbname " . ($info->{blob} ? "from blob" : "");
+            $cache = $info->create_thumbnail($thumbname,$rotate,$size, $size_name,$cache);
         } else {
-            $info->set_thumbnail_info($thumbname,$s);
+            $info->set_thumbnail_info($thumbname,$size,$size_name);
         }
     }
 };
@@ -107,7 +108,7 @@ sub extract_thumbnail_svg {
     unlink $tempfile
         or status 1, "Couldn't remove temporary file '$tempfile'";
 
-    create_thumbnail_sizes($info,$output_directory,0,$sizes);    
+    create_thumbnail_sizes($info,$output_directory,0,$sizes);
 };
 
 sub create_thumbnail {
@@ -115,7 +116,6 @@ sub create_thumbnail {
     # XXX Consider using the "reddit interesting image section" algorithm for squares
     # Or is this just a problem of the CSS / Slideshow / Templates?
     my ($info,$output_directory,$sizes) = @_;
-    $sizes ||= [160]; # XXX Do we still want this? App::ImageStream::Config::Defaults has these
     
     if (my $handler = $thumbnail_handlers{ $info->{extension} }) {
         $handler->($info,$output_directory,$sizes);
