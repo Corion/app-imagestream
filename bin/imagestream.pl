@@ -33,6 +33,7 @@ my $cfg = Config::Cascade->collect(
 
     getopt => {
         'f|force' => \my $force,
+        # how can we override things from the config file here?!
     },
 );
 
