@@ -31,6 +31,12 @@ sub get_theme {
     } else {
         die "Can't find theme '$theme'";
     };
+    if( $cfg->{merge_theme} ) {
+        $theme = Archive::Merged->new(
+            Archive::Dir->new( $cfg->{merge_theme}->[0] ),
+            $theme,
+        );
+    };
 };
 
 sub apply_theme {
@@ -38,13 +44,15 @@ sub apply_theme {
     
     my %seen;
     for my $format (qw(atom rss html)) {
+        my $entry = "imagestream.$format";
+        my $theme = $self->find_entry( $entry, $themes );
         my $template;
-        if ($theme->contains_file("imagestream.$format")) {
-            $template = $theme->get_content("imagestream.$format");
+        if ($theme->contains_file($entry)) {
+            $template = $theme->get_content($entry);
         };
-        $seen{ "imagestream.$format" }++;
+        $seen{ $entry }++;
         App::ImageStream::List->create(
-            $format => file( $output, "imagestream.$format" ),
+            $format => file( $output, $entry ),
             $template,
             $cfg,
             @selected

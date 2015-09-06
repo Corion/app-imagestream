@@ -38,7 +38,6 @@ Example:
 
 May appear only once.
 
-
 =head2 C<< theme DIR >>
 
 Theme
@@ -55,6 +54,21 @@ May appear only once.
 =for config
     repeat  => 1,
     default => 'plain',
+
+=head2 C<< merge_theme DIR >>
+
+If you don't want to modify the theme itself but replace or customize
+parts of it, you can specify the directory to use.
+
+Example:
+
+  merge_theme 'customize/'
+
+May appear only once.
+
+=for config
+    repeat  => 1,
+    default => 'customize',
 
 =head2 C<< collect DIR >>
 
@@ -162,16 +176,16 @@ Example:
 
   author 'A. U. Thor';
 
-=head2 C<< base URL >>
+=head2 C<< canonical_url URL >>
 
 =for config
-    default => 'http://datenzoo.de/image_stream',
+    default => 'http://datenzoo.de/image_stream/imagestream.html',
 
 Base URL under which the gallery+feed can be reached
 
 Example:
 
-  base 'http://datenzoo.de/image_feed'
+  canonical_url 'http://datenzoo.de/image_feed'
 
 =head2 C<< title NAME >>
 
@@ -180,6 +194,21 @@ Title of your feed
 Example:
 
   title 'All my pictures'
+
+=head2 C<< hero_image filename >>
+
+=for config
+    hero_image => 'my_hero_image.jpg',
+
+Hero image which will be used as the top image
+for the image gallery.
+
+Example:
+
+  hero_image 'my_hero_image.jpg'
+
+The path is (currently) taken as relative to the theme. If you want
+to override something, place it in the customized/ folder.
 
 =head2 C<< inkscape PATH >>
 
