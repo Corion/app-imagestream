@@ -37,6 +37,9 @@ my $cfg = Config::Cascade->collect(
     },
 );
 
+# A simple sanity check so we bail out early if a theme isn't found
+my $theme = App::ImageStream->get_theme($cfg);
+
 my $inkscape = $cfg->{inkscape}->[0];
 
 sub status ($$) {
@@ -216,7 +219,7 @@ status 2, sprintf "Created %d thumbnails in %d seconds (%d/s)", 0+@selected, $ta
 status 1, sprintf "Found %d images", scalar @selected;
 App::ImageStream->apply_theme(
     $cfg,
-    App::ImageStream->get_theme($cfg),
+    $theme,
     $cfg->{output}->[0],
     @selected,
 );
