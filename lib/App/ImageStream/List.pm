@@ -32,6 +32,10 @@ sub create {
         if (-f $file);
     
     my $base_url = $config->{ base }->[0];
+    if( !$base_url ) {
+        $base_url = $config->{ canonical_url }->[0];
+        $base_url =~ s!/[^/]+$!/!;
+    };
     my $feed_url = "${base_url}/" . $file->basename;
     $feed_url =~ s/\.(\w+)$//;
     my $updated  = strftime '%Y-%m-%dT%H:%M:%SZ', gmtime;
@@ -44,12 +48,13 @@ sub create {
     
     my $feedinfo = {
         title   => $config->{title}->[0] || 'My image feed',
-        #link    => $base_url,
         link    => { rel => 'self', href => $feed_url, },
         author  => $config->{author}->[0] || 'A. U. Thor',
         id      => $base_url,
         base    => $base_url,
         feed_url => "$base_url/" . $file->basename,
+        canonical => $config->{ canonical_url }->[0],
+        hero_image => $config->{hero_image}->[0],
         updated => $updated,
         feeds   => $feeds,
         theme   => $theme,
