@@ -10,3 +10,4 @@ blib/
 cover_db
 MYMETA.yml
 MYMETA.json
+templates/customized/
