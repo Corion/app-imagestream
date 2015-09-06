@@ -3,6 +3,7 @@ use strict;
 use vars qw($VERSION);
 use Archive::Tar;
 use Archive::Dir;
+use Archive::Merged;
 use Path::Class;
 
 =head1 NAME
