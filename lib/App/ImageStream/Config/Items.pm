@@ -171,11 +171,25 @@ Example:
 =for config
     default => 'http://datenzoo.de/image_stream/imagestream.html',
 
-Base URL under which the gallery+feed can be reached
+Canonical URL under which the gallery+feed can be reached
 
 Example:
 
   canonical_url 'http://datenzoo.de/image_feed'
+
+=head2 C<< base URL >>
+
+=for config
+    default => 'http://datenzoo.de/image_stream/',
+
+Base URL under which the gallery+feed can be reached
+
+Example:
+
+  base 'http://datenzoo.de/image_stream'
+
+If this is not specified, the canonical URL will be shortened by
+one component and used.
 
 =head2 C<< title NAME >>
 
