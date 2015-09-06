@@ -23,20 +23,30 @@ object.
 
 sub get_theme {
     my ($self,$cfg) = @_;
-    my $theme = $cfg->{theme}->[0];
-    if (-d "templates/$theme") {
-        $theme = Archive::Dir->new("templates/$theme")
-    } elsif ($theme =~ /(?:\.tar(\.gz)?|\.tgz)$/i) {
-        $theme = Archive::Tar->new("templates/$theme")
-    } else {
-        die "Can't find theme '$theme'";
+    my @themes;
+    for my $theme (@{$cfg->{theme}}) {
+        if (-d "templates/$theme") {
+            $theme = Archive::Dir->new("templates/$theme")
+        } elsif ($theme =~ /(?:\.tar(\.gz)?|\.tgz)$/i) {
+            $theme = Archive::Tar->new("templates/$theme")
+        } else {
+            die "Can't find theme '$theme'";
+        };
+        push @themes, $theme;
     };
+    
     if( $cfg->{merge_theme} ) {
-        $theme = Archive::Merged->new(
-            Archive::Dir->new( $cfg->{merge_theme}->[0] ),
-            $theme,
-        );
+        push @themes, Archive::Dir->new( $cfg->{merge_theme}->[0] );
     };
+    
+    my $theme;
+    if( @themes > 1 ) {
+        $theme = Archive::Merged->new( @themes )
+    } else {
+        $theme = $themes[0]
+    };
+    
+    $theme
 };
 
 sub apply_theme {
