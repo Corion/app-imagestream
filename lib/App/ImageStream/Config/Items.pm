@@ -45,30 +45,20 @@ Theme
 Specifies the theme directory to use. You can use a themepack (.tar.gz)
 or a directory.
 
+If you don't want to modify the theme itself but replace or customize
+parts of it, you can specify the directory to use. Multiple themes
+will successively modify each other. The last theme mentioned will be
+the one overriding the previous settings. Files that are not modified
+by a later theme will be used from the earlier theme.
+
 Example:
 
-  theme 'fancy.tar.gz'
-
-May appear only once.
+  theme 'fancy.tar.gz'; # use the fancy theme
+  theme 'my_images/';   # but use images from my_images/ directory
 
 =for config
     repeat  => 1,
     default => 'plain',
-
-=head2 C<< merge_theme DIR >>
-
-If you don't want to modify the theme itself but replace or customize
-parts of it, you can specify the directory to use.
-
-Example:
-
-  merge_theme 'customize/'
-
-May appear only once.
-
-=for config
-    repeat  => 1,
-    default => 'customize',
 
 =head2 C<< collect DIR >>
 
