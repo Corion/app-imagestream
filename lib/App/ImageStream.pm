@@ -55,7 +55,6 @@ sub apply_theme {
     my %seen;
     for my $format (qw(atom rss html)) {
         my $entry = "imagestream.$format";
-        my $theme = $self->find_entry( $entry, $themes );
         my $template;
         if ($theme->contains_file($entry)) {
             $template = $theme->get_content($entry);
