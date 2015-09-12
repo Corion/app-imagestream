@@ -73,6 +73,7 @@ sub collect {
     
     # XXX Do we want to be able to add more things, and if so, where?
     # Maybe a list of files, instead of just config_file
+    # Also, how do we communicate upwards which items we actually used?
     
     my @options;
     my @config_files;
@@ -90,7 +91,7 @@ sub collect {
         @config_files = @{ $opts{ config_file } };
     };
     for my $config_file (@config_files) {
-        if( ref $config_file ) {
+        if( ref $config_file eq 'SCALAR') {
             push @options, App::ImageStream::Config::DSL->parse_config(
                 \%App::ImageStream::Config::Items::items,
                 $$config_file,
@@ -106,6 +107,7 @@ sub collect {
     push @options, App::ImageStream::Config::Defaults->parse_config(
         \%App::ImageStream::Config::Items::items,
     );
+    push @options, { _meta => { loaded_files => \@config_files } };
 
     reduce { $merge->merge( $a, $b ) } {}, @options;
 };

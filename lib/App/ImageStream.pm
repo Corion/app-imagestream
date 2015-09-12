@@ -54,7 +54,7 @@ sub apply_theme {
     my ($self, $cfg, $theme, $output, @selected) = @_;
     
     my %seen;
-    for my $format (qw(atom rss html)) {
+    for my $format (qw(atom rss)) {
         my $entry = "imagestream.$format";
         my $template;
         if ($theme->contains_file($entry)) {
@@ -63,6 +63,21 @@ sub apply_theme {
         $seen{ $entry }++;
         App::ImageStream::List->create(
             $format => file( $output, $entry ),
+            $template,
+            $cfg,
+            @selected
+        );
+    }
+
+    for my $entry (@{ $cfg->{template_file}}) {
+        warn "Filling in template for '$entry' (html)";
+        my $template;
+        if ($theme->contains_file($entry)) {
+            $template = $theme->get_content($entry);
+        };
+        $seen{ $entry }++;
+        App::ImageStream::List->create(
+            'html' => file( $output, $entry ),
             $template,
             $cfg,
             @selected

@@ -24,23 +24,42 @@ BEGIN {
 
 use vars qw'%thumbnail_handlers';
 
-my $cfg = Config::Cascade->collect(
-    \%App::ImageStream::Config::Items::items,
-    
-    config_default => 'imagestream.cfg',
-    # config_file => 'imagestream.cfg',
-    env => 'IMAGESTREAM_',
+sub collect_config {
+    my(@files) = @_;
+    my $cfg = Config::Cascade->collect(
+        \%App::ImageStream::Config::Items::items,
+        
+        config_default => 'imagestream.cfg',
+        config_file => \@files,
+        env => 'IMAGESTREAM_',
 
-    getopt => {
-        'f|force' => \my $force,
-        # how can we override things from the config file here?!
-    },
-);
+        getopt => {
+            'f|force' => \my $force,
+            # how can we override things from the config file here?!
+            # Simply add @ARGV?!
+        },
+    );
+    $cfg
+};
+
+# We should take @ARGV in consideration here...
+# so that people can specify a configuration to use on the command line
+my $cfg = collect_config();
 
 # A simple sanity check so we bail out early if a theme isn't found
 my $theme = App::ImageStream->get_theme($cfg);
 
 # Merge the theme configuration here too
+# This is done in a somewhat ugly way by adding the template
+# configuration file(s)
+# and then re-reading the whole configuration
+# The template configuration files should also be a cascade
+# except that our template merger facility only returns the last
+# configuration file instead of returning all of them
+if( $theme->contains_file('theme.cfg') ) {
+    my $theme_config = $theme->get_content('theme.cfg');
+    $cfg = collect_config( \$theme_config );
+};
 
 my $inkscape = $cfg->{inkscape}->[0];
 

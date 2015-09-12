@@ -254,18 +254,48 @@ Example:
 
   verbose 2
 
-=head2 C<< manifest >>
+=head2 C<< manifest FILE >>
 
 =for config
-    default => undef,
+    default => 'imagestream.manifest',
 
 Output a HTML 5 MANIFEST file
 
 Example:
 
-  manifest 'index.manifest'
+  manifest 'index.manifest';
 
 This can be used to make your gallery available offline.
+
+=head2 C<< template_file FILE >>
+
+=for config
+    default => 'imagestream.html',
+
+Each C<template_file> entry lists a file in which special tags
+will be replaced by their respective content. The default is
+to just treat C<imagestream.html> special but if there are other
+files you want to be processed with the images found, you
+can list all those files here.
+
+Note that you need to list C<imagestream.html> if you list anything else here.
+
+Example:
+
+  template_file 'index.html';
+  template_file 'photos.json';
+
+=head2 C<< feed FEEDTYPES >>
+
+=for config
+    default => 'atom'
+
+Lists the feeds that are generated. The default is to generate both,
+an C<atom> feed and an C<rss> feed.
+
+Example:
+
+  feed 'atom', 'rss';
 
 =cut
 
