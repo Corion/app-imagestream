@@ -254,6 +254,19 @@ Example:
 
   verbose 2
 
+=head2 C<< manifest >>
+
+=for config
+    default => undef,
+
+Output a HTML 5 MANIFEST file
+
+Example:
+
+  manifest 'index.manifest'
+
+This can be used to make your gallery available offline.
+
 =cut
 
 # Parse the config items from the documentation
