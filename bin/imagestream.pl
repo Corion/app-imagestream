@@ -40,6 +40,8 @@ my $cfg = Config::Cascade->collect(
 # A simple sanity check so we bail out early if a theme isn't found
 my $theme = App::ImageStream->get_theme($cfg);
 
+# Merge the theme configuration here too
+
 my $inkscape = $cfg->{inkscape}->[0];
 
 sub status ($$) {
