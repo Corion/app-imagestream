@@ -90,10 +90,17 @@ sub collect {
         @config_files = @{ $opts{ config_file } };
     };
     for my $config_file (@config_files) {
-        push @options, App::ImageStream::Config::DSL->parse_config_file(
-            \%App::ImageStream::Config::Items::items,
-            $config_file,
-        );
+        if( ref $config_file ) {
+            push @options, App::ImageStream::Config::DSL->parse_config(
+                \%App::ImageStream::Config::Items::items,
+                $$config_file,
+            );
+        } else {
+            push @options, App::ImageStream::Config::DSL->parse_config_file(
+                \%App::ImageStream::Config::Items::items,
+                $config_file,
+            );
+        };
     };
     
     push @options, App::ImageStream::Config::Defaults->parse_config(
