@@ -15,6 +15,7 @@ use vars '%types';
     'atom' => 'App::ImageStream::List::Atom',
     'rss'  => 'App::ImageStream::List::RSS',
     'html' => 'App::ImageStream::List::HTML',
+    'manifest' => 'App::ImageStream::List::Manifest',
 );
 
 =head2 C<< ->create TYPE, FILE, ITEMS >>
@@ -43,6 +44,7 @@ sub create {
         atom => "$feed_url.atom",
         rss  => "$feed_url.rss",
         html => "$feed_url.html",
+        manifest => "$feed_url.manifest",
     };
     my $theme = $config->{theme}->[0];
     
