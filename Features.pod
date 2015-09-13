@@ -36,8 +36,23 @@ Publish thumbnail list as feed (RSS, Atom) and HTML Slideshow/Timeline
 
 Custom themes and themepacks
 
+We have the default theme and a theme using the
+Photoswipe gallery software.
+
+=item *
+
+Easy customization of existing themes
+
 =item *
 
 link to specific image in image stream
+
+=item *
+
+Generate a MANIFEST for offline capability, also generate
+C<index-offline.html> which pulls in the MANIFEST so people
+can choose between the offline and the online version.
+
+This allows themes to install as a mobile app
 
 =back
