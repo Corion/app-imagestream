@@ -94,9 +94,11 @@ sub apply_theme {
     }
 
     # copy all other files from the theme
+    my $ignore = join "|", '\\.cfg$', '^.';
     for my $file ($theme->list_files) {
         next
             if $seen{ $file };
+        next if $file =~ /($ignore)/;
         my $target = file($output, $file );
         push @generated_files, $file->as_foreign('Unix')->stringify;
         #status 3, "Copying $file";
