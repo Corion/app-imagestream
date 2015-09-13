@@ -98,7 +98,7 @@ sub apply_theme {
         next
             if $seen{ $file };
         my $target = file($output, $file );
-        push @generated_files, $target;
+        push @generated_files, $file->as_foreign('Unix')->stringify;
         #status 3, "Copying $file";
         $theme->extract_file($file, $target);
     };
