@@ -8,7 +8,7 @@ $VERSION = '0.01';
 use Data::Dumper;
 
 sub generate {
-    my ($class,$info,$template,@data) = @_;
+    my ($package,$info,$template,$theme,@items) = @_;
 
     my $base_url = $info->{base}     || 'http://datenzoo.de/image_stream';
     my $feed_url = $info->{feed_url} || "${base_url}/rss";
@@ -16,7 +16,7 @@ sub generate {
     
     my $rss = XML::RSS::SimpleGen->new( $base_url, $info->{title} );
     $rss->language('en');
-    for my $item (@data) {
+    for my $item (@items) {
         my $url_large = join "/", 
                           $base_url,
                           $item->{sizes}->{medium}->{name}->basename

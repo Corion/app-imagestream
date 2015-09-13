@@ -6,7 +6,7 @@ use vars qw($VERSION);
 $VERSION = '0.01';
 
 sub generate {
-    my ($package,$info,$template,@items) = @_;
+    my ($package,$info,$template,$theme,@items) = @_;
     
     my $t = $info->{template} || Template->new({
         POST_CHOMP => 1,

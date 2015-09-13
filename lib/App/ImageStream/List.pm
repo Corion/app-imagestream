@@ -26,7 +26,7 @@ from the old file.
 =cut
 
 sub create {
-    my ($package,$type, $file, $template, $config, @items) = @_;
+    my ($package,$type, $file, $template, $theme, $config, @items) = @_;
     my $old = '';
     
     $old = file($file)->slurp(iomode => '<:raw')
@@ -46,7 +46,7 @@ sub create {
         html => "$feed_url.html",
         manifest => "$feed_url.manifest",
     };
-    my $theme = $config->{theme}->[0];
+    my $theme_name = $config->{theme}->[0];
     
     my $feedinfo = {
         title   => $config->{title}->[0] || 'My image feed',
@@ -59,12 +59,12 @@ sub create {
         hero_image => $config->{hero_image}->[0],
         updated => $updated,
         feeds   => $feeds,
-        theme   => $theme,
+        theme   => $theme_name,
         about   => "App::ImageStream $VERSION",
     };
     
     my $generator = $types{$type};
-    my $new = $generator->generate($feedinfo, $template, @items);
+    my $new = $generator->generate($feedinfo, $template, $theme, @items);
     
     if ($old ne $new) {
         open my $out, '>', $file

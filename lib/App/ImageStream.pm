@@ -79,6 +79,7 @@ sub apply_theme {
         App::ImageStream::List->create(
             'html' => file( $output, $entry ),
             $template,
+            $theme,
             $cfg,
             @selected
         );
