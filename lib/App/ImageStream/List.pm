@@ -3,6 +3,7 @@ use strict;
 use App::ImageStream::List::Atom;
 use App::ImageStream::List::HTML;
 use App::ImageStream::List::RSS;
+use App::ImageStream::List::Manifest;
 use Path::Class;
 use POSIX qw(strftime);
 
@@ -12,9 +13,9 @@ $VERSION = '0.01';
 use vars '%types';
 
 %types = (
-    'atom' => 'App::ImageStream::List::Atom',
-    'rss'  => 'App::ImageStream::List::RSS',
-    'html' => 'App::ImageStream::List::HTML',
+    'atom'     => 'App::ImageStream::List::Atom',
+    'rss'      => 'App::ImageStream::List::RSS',
+    'html'     => 'App::ImageStream::List::HTML',
     'manifest' => 'App::ImageStream::List::Manifest',
 );
 

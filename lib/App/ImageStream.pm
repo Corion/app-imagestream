@@ -53,6 +53,10 @@ sub get_theme {
 sub apply_theme {
     my ($self, $cfg, $theme, $output, @selected) = @_;
     
+    # @generated_files will contain both images and additionally
+    # generated or copied files
+    my @generated_files = @selected;
+    
     my %seen;
     for my $format (qw(atom rss)) {
         my $entry = "imagestream.$format";
@@ -61,12 +65,14 @@ sub apply_theme {
             $template = $theme->get_content($entry);
         };
         $seen{ $entry }++;
+        my $target = file( $output, $entry );
         App::ImageStream::List->create(
-            $format => file( $output, $entry ),
+            $format => $target,
             $template,
             $cfg,
             @selected
         );
+        push @generated_files, $target;
     }
 
     for my $entry (@{ $cfg->{template_file}}) {
@@ -76,13 +82,15 @@ sub apply_theme {
             $template = $theme->get_content($entry);
         };
         $seen{ $entry }++;
+        my $target = file( $output, $entry );
         App::ImageStream::List->create(
-            'html' => file( $output, $entry ),
+            'html' => $target,
             $template,
             $theme,
             $cfg,
             @selected
         );
+        push @generated_files, $target;
     }
 
     # copy all other files from the theme
@@ -90,8 +98,21 @@ sub apply_theme {
         next
             if $seen{ $file };
         my $target = file($output, $file );
+        push @generated_files, $target;
         #status 3, "Copying $file";
         $theme->extract_file($file, $target);
+    };
+    
+    # Generate a HTML5 manifest if that's wanted
+    if( my $manifest_file = $cfg->{manifest}->[0]) {
+        my $target = file($output, $manifest_file );
+        App::ImageStream::List->create(
+            'manifest' => $target,
+            undef,
+            $theme,
+            $cfg,
+            @generated_files
+        );
     };
 };
 
