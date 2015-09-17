@@ -4,12 +4,6 @@
 
 =item *
 
-Generate a MANIFEST for offline capability, also generate
-C<index-offline.html> which pulls in the MANIFEST so people
-can choose between the offline and the online version.
-
-=item *
-
 Redo the CSS to support different media styles, like phone, tablets etc.
 transparently
 
