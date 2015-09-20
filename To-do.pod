@@ -4,6 +4,11 @@
 
 =item *
 
+Cache the image data in a SQLite database to easily regenerate
+non-image files
+
+=item *
+
 Redo the CSS to support different media styles, like phone, tablets etc.
 transparently
 
