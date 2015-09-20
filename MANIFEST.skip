@@ -15,3 +15,5 @@ Thumbs.db$
 ^cover_db/
 ^db/
 ^MYMETA\.
+^output/
+^templates/customized/
