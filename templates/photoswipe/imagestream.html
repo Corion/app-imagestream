@@ -30,7 +30,14 @@
 <style>
 body { background: #282B30; }
 
-#titlebar { color: #7f7f7f; }
+#titlebar {
+    color: #7f7f7f;
+    height: 64px;
+    background-image: url([% info.hero_image %]);
+    background-size: cover;
+    font-family: 'Exo', sans-serif;
+    font-weight: 100;
+}
 
 #thumblist {
     padding: none;
@@ -77,7 +84,6 @@ body { background: #282B30; }
 <a href="./imagestream_offline.html">Save for offline use</a>
 [% END %]
 <h2 id="titlebar"
-    style="background-image: url([% info.hero_image %]);"
 >Images by [% info.author %], last updated on [% info.updated %]</h2>
 <div id="navcontainer">
 <div id="thumbs">
