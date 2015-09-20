@@ -7,7 +7,7 @@ use List::MoreUtils qw(zip);
 use Decision::Depends;
 use File::Temp qw( tempfile );
 use App::ImageStream::Config::Items;
-use Config::Cascade;
+use Config::Collect;
 use App::ImageStream;
 use App::ImageStream::List;
 use App::ImageStream::Image;
@@ -26,7 +26,7 @@ use vars qw'%thumbnail_handlers';
 
 sub collect_config {
     my(@files) = @_;
-    my $cfg = Config::Cascade->collect(
+    my $cfg = Config::Collect->collect(
         \%App::ImageStream::Config::Items::items,
         
         config_default => 'imagestream.cfg',
