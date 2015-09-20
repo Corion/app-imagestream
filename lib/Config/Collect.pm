@@ -4,7 +4,7 @@
 # Merge items from user config file ~/app.cfg
 # Merge items from global config file /etc/app.cfg
 # Merge application defaults from ::Items.pm
-package Config::Cascade;
+package Config::Collect;
 use strict;
 use Hash::Merge;
 use File::Homedir;
