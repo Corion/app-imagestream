@@ -106,7 +106,7 @@ sub create_thumbnail_sizes {
         my $thumbname = file( $output_directory, $info->thumbnail_name( $size ));
         warn "$info->{file} generates empty thumb"
             if $thumbname eq "";
-        
+
         if (test_dep( -target => "$thumbname", -depend => $info->{file}->stringify )) {
             # XXX The svg/bitmap handler dispatch should go here
             #warn "Creating '$size_name' thumbnail $thumbname " . ($info->{blob} ? "from blob" : "");
@@ -124,12 +124,12 @@ sub extract_thumbnail_svg {
     my ($fh, $tempfile) = tempfile();
     close $fh; # we're on Windows
     my $source = $info->{file};
-    
+
     my $cmd = qq{"$inkscape" -D "--export-png=$tempfile" --export-text-to-path --without-gui "$source"};
     status 7, "Running [$cmd]";
     system($cmd) == 0
         or status 0, "Couldn't run [$cmd]: $!/$?";
-    
+
     # create the thumbnail(s)
     #my $blob = $info->{file}->slurp(iomode => '<:raw');
     my $blob = file($tempfile)->slurp(iomode => '<:raw');
@@ -146,7 +146,7 @@ sub create_thumbnail {
     # XXX Consider using the "reddit interesting image section" algorithm for squares
     # Or is this just a problem of the CSS / Slideshow / Templates?
     my ($info,$output_directory,$sizes) = @_;
-    
+
     if (my $handler = $thumbnail_handlers{ $info->{extension} }) {
         $handler->($info,$output_directory,$sizes);
     } else {
@@ -156,11 +156,11 @@ sub create_thumbnail {
 
 sub create_thumbnails {
     my ($output_directory, $sizes, @files) = @_;
-    
+
     my $start = time;
     for my $info (@files) {
         status 6, "Creating thumbnails for $info->{file}";
-        
+
         create_thumbnail($info,$output_directory,$sizes);
         $info->release_metadata;
     };
@@ -212,7 +212,7 @@ while (@images
     my $info = shift @images;
     status 5, "Fetching metadata for " . $info->{file};
     $info->fetch_metadata();
-    
+
     # Now, add a "date" tag to all images, grouping together those taken
     # in close succession, so wrapping over midnight doesn't break up those
     my $last_time = DateTime->from_epoch( epoch => 1 );
