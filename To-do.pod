@@ -4,6 +4,18 @@
 
 =item *
 
+The templates should also provide Facebook/Open-whatever style microformats
+to convey the information and be suitable for convenient linking
+
+=item *
+
+Allow a blacklist of single images which have been manually marked as
+"ugh", and also allow a whitelist of "featured" showcase images. Maybe these
+should simply be tags and the tagging/admin app simply writes these into
+the respective images.
+
+=item *
+
 Cache the image data in a SQLite database to easily regenerate
 non-image files
 
