@@ -17,7 +17,7 @@ use vars qw( $merge $VERSION);
 $VERSION = '0.01';
 
 use Data::Dumper;
-Hash::Merge::specify_behavior( 
+Hash::Merge::specify_behavior(
     {
         'SCALAR' => {
             'SCALAR' => sub { warn Dumper \@_; $_[0] },
@@ -33,7 +33,7 @@ Hash::Merge::specify_behavior(
             'SCALAR' => sub { warn Dumper \@_; $_[0] },
             'ARRAY'  => sub { 0+@{$_[0]} ? $_[0] : $_[1] },
             'HASH'   => sub { Hash::Merge::_merge_hashes( $_[0], $_[1] ) },
-        }, 
+        },
     }
     => 'KEEP_LEFT'
 );
@@ -59,10 +59,10 @@ sub collect {
     if (! ref $opts{ config_file }) {
         $opts{ config_file } = [$opts{ config_file }]
     };
-    
+
     # Order: Most specific to least specific
     $opts{ config_dirs } ||= ['.',File::HomeDir->my_data,'/etc'];
-    
+
     # now, try to also load other config files specifying additional defaults
     # Only those we can read
     push @{ $opts{ config_file }}, map {
@@ -84,9 +84,9 @@ sub collect {
     );
     push @options, $opt_commandline;
     # XXX Should this just call Pod::Usage?!
-    
+
     # XXX Parse %ENV here
-    
+
     if (! @config_files) {
         @config_files = @{ $opts{ config_file } };
     };
@@ -103,7 +103,7 @@ sub collect {
             );
         };
     };
-    
+
     push @options, App::ImageStream::Config::Defaults->parse_config(
         \%App::ImageStream::Config::Items::items,
     );
