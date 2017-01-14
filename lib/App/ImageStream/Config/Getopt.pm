@@ -1,6 +1,6 @@
 package App::ImageStream::Config::Getopt;
 use strict;
-use Getopt::Long;
+use Getopt::Long qw(GetOptionsFromArray);
 
 =head1 NAME
 
@@ -10,18 +10,23 @@ App::ImageStream::Config::Getopt - get command line options from a spec
 
   use App::ImageStream::Config::Items;
   use App::ImageStream::Config::Getopt;
-  App::ImageStream::Config::Getopt::get_options(
+  App::ImageStream::Config::Getopt->get_options(
       \%App::ImageStream::Config::Items::items,
-      @ARGV
-  ) or die "Bad command line arguments";
+      { # additional command line items
+          'c|config:s' => \my @config_files,
+      },
+      \@ARGV
+  ) or die "Bad command line argument(s)";
 
 =cut
 
 sub get_options {
-    my ($package,$spec,@options) = @_;
+    my ($package,$spec,$additional,$argv) = @_;
+    $argv ||= \@main::ARGV;
     
     my %handler;
     my $result;
+    my @options;
     for my $item (values %$spec) {
         my $n = $item->{name};
         
@@ -48,7 +53,7 @@ sub get_options {
         };
     };
     return
-        (GetOptions(@options), $result);
+        (GetOptionsFromArray($argv, @options), $result);
 };
 
 1;
