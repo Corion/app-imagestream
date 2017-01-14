@@ -9,38 +9,9 @@ non-image files
 
 =item *
 
-Redo the CSS to support different media styles, like phone, tablets etc.
-transparently
-
-=item *
-
-Add media queries for Nexus 7 (?)
-
-=item *
-
-Add media queries for HDTV (1920x1080)
-
-=item *
-
-Add media queries for iPad mini (?)
-
-=item *
-
-Add media queries for iPad (?)
-
-=item *
-
-Add media queries for iPad 2 (?)
-
-=item *
-
-Add media queries for small phone (?)
-
-=item *
-
-White border around active/current image, together with triangle pointing down
-
-Potentially do this by just adding/removing a class from the focused image
+Make room for "galleries" by having a (text) list of images and their
+textual description. Alternatively provide that list of images through
+an SQLite database (see above).
 
 =item *
 
@@ -68,7 +39,7 @@ Move the meat of the program into App::ImageStream
 =item *
 
 Automated upload via WebDAV / SCP / tar+ssh+untar / copy / rsync
-(also see L<App::Koi>)
+(also see L<App::Koi> and L<Net::SSH2>)
 
 =item *
 
@@ -87,6 +58,14 @@ Turn image list into "topical" list grouped by date, like App::PhotoImport does
 =item *
 
 Create a nice-ish wxPerl UI
+
+=item *
+
+Default theme:
+
+White border around active/current image, together with triangle pointing down
+
+Potentially do this by just adding/removing a class from the focused image
 
 =item *
 
@@ -135,6 +114,49 @@ C<< Padre::ProjectManager->from_file >>.
 
 =back
 
+=head1 Themes
+
+=head2 Default theme
+
+=over 4
+
+=item *
+
+Redo the CSS to support different media styles, like phone, tablets etc.
+transparently
+
+=item *
+
+Add media queries for Nexus 7 (?)
+
+=item *
+
+Add media queries for HDTV (1920x1080)
+
+=item *
+
+Add media queries for iPad mini (?)
+
+=item *
+
+Add media queries for iPad (?)
+
+=item *
+
+Add media queries for iPad 2 (?)
+
+=item *
+
+Add media queries for small phone (?)
+
+=back
+
+=head2 Photoswipe theme
+
+=over 4
+
+=back
+
 =head1 Nice-to-have feature list
 
 =over 4
@@ -160,18 +182,6 @@ files and generates RSS+Atom+HTML from it
 
 =item *
 
-More visible RSS icon in-page
-
-=item *
-
-left/right buttons in page
-
-=item *
-
-autoplay / slideshow in page
-
-=item *
-
 "permalink"/"link to this image" for each image
 
 =item *
@@ -184,7 +194,7 @@ Generate face-centered thumbnails from face detection
 
 =item *
 
-Factor out cascade into config-cascade and file-cascade
+Factor out cascade into Config::Collect and file-cascade
 
 =item *
 
@@ -194,6 +204,8 @@ HTML
 =item *
 
 Optionally even inline the thumbnails as DATA URIs
+
+See L<Image::JpegMinimal> for that.
 
 =item *
 
@@ -217,6 +229,10 @@ and count them up if necessary.
 =item *
 
 Minify HTML
+
+=item *
+
+Have a custom text or "template" for the RSS + Atom feeds
 
 =back
 
