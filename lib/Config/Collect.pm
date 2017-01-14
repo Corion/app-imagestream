@@ -69,18 +69,21 @@ sub collect {
              my $f = file($_, $opts{ config_default });
              -r $f ? $f : ()
     } @{ $opts{ config_dirs }};
-    
-    
+
+
     # XXX Do we want to be able to add more things, and if so, where?
     # Maybe a list of files, instead of just config_file
     # Also, how do we communicate upwards which items we actually used?
-    
+
     my @options;
     my @config_files;
     my ($ok,$opt_commandline) = App::ImageStream::Config::Getopt->get_options(
         $struct,
-        'c|config:s' => \@config_files,
-        %{ $opts{ getopt }},
+        {
+            'c|config:s' => \@config_files,
+            %{ $opts{ getopt }},
+        },
+        $opts{ argv },
     );
     push @options, $opt_commandline;
     # XXX Should this just call Pod::Usage?!
