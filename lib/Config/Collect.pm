@@ -113,3 +113,11 @@ sub collect {
 };
 
 1;
+
+=head1 SEE ALSO
+
+L<Config::Onion> - another config loader with a similar approach but a fixed
+hierarchy of layers. It is missing the "environment" layer and also doesn't
+allow for arbitrary config file formats.
+
+=cut
