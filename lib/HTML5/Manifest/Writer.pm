@@ -26,4 +26,6 @@ sub generate_manifest {
     };
     
     return join "\x0a", @res
-}
+};
+
+1;
