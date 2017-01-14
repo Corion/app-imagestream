@@ -29,13 +29,24 @@
 <style>
 body { background: #282B30; }
 
-#titlebar {
-    color: #7f7f7f;
-    height: 64px;
+#header {
+    overflow: hidden;
+    width: 100%;
     background-image: url([% info.hero_image %]);
     background-size: cover;
+    height: 64px;
+}
+
+.feeds {
+    text-align: right;
+    float: right;
+}
+
+#titlebar {
+    color: #7f7f7f;
     font-family: 'Exo', sans-serif;
     font-weight: 100;
+    float: left;
 }
 
 #thumblist {
@@ -76,14 +87,20 @@ body { background: #282B30; }
 
 </head>
 <body>
-<div class="feeds"><a href="[% info.feeds.rss %]" alt="Subscribe to my images"><img src="feed-icon-32x32.png"></a></div>
+<div id="header">
+<h2 id="titlebar"
+>Images by [% info.author %], last updated on [% info.updated %]
+
+<div class="feeds">
 [% IF offline %]
 <a href="./imagestream.html">Online version</a>
 [% ELSE %]
-<a href="./imagestream_offline.html">Save for offline use</a>
+<a href="./imagestream_offline.html" alt="Save for offline use"><img src="download.png"></a>
 [% END %]
-<h2 id="titlebar"
->Images by [% info.author %], last updated on [% info.updated %]</h2>
+<a href="[% info.feeds.rss %]" alt="Subscribe to my images"><img src="feed-icon-36x36.png"></a>
+</div>
+</h2>
+</div>
 <div id="navcontainer">
 <div id="thumbs">
 <div id="thumblist">
@@ -348,8 +365,8 @@ body { background: #282B30; }
 		          }
 		          captionEl.children[0].innerHTML = item.title +  '<br/><small>Photo: ' + item.author + '</small>';
 		          return true;
-		        }//,
-		        //showHideOpacity: true
+		        },
+		        showHideOpacity: true
 		       
 	  		};
 
