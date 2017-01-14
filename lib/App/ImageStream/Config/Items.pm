@@ -214,6 +214,18 @@ Example:
 The path is (currently) taken as relative to the theme. If you want
 to override something, place it in the customized/ folder.
 
+=head2 C<< from_cache SWITCH >>
+
+Collect images from cache
+
+A switch to use the cached list of images. This is mostly
+to be used from the command line when trying out new themes
+or customizing existing ones.
+
+Example:
+
+  from_cache 1;
+
 =head2 C<< inkscape PATH >>
 
 =for config
