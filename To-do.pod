@@ -61,6 +61,10 @@ Create a nice-ish wxPerl UI
 
 =item *
 
+Instead of Wx, consider Prima
+
+=item *
+
 Default theme:
 
 White border around active/current image, together with triangle pointing down
