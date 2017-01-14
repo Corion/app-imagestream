@@ -51,8 +51,8 @@ is most specific to least specific.
 
 sub collect {
     my ($class, $struct, %opts) = @_;
-    $opts{ getopt } ||= [];
-    
+    $opts{ getopt } ||= {};
+
     # Least specific to most specific?!
     $opts{ config_default } ||= file($0 . ".cfg")->basename;
     $opts{ config_file } ||= $opts{ config_default };
