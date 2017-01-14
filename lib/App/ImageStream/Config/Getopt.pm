@@ -41,6 +41,11 @@ sub get_options {
             warn "More than one argument is not supported by Getopt, got $item->{arg_count}"
         };
         push @options, $opt => $fetch;
+        
+        # Also support --foo-bar for option foo_bar
+        if( $opt =~ s/_/-/g ) {
+            push @options, $opt => $fetch;
+        };
     };
     return
         (GetOptions(@options), $result);
