@@ -14,6 +14,7 @@ use App::ImageStream::Image;
 use DateTime;
 use DateTime::Duration;
 use Data::Dumper;
+use DB_File; # for the cache...
 
 use vars qw($VERSION);
 $VERSION = '0.03';
@@ -161,31 +162,36 @@ sub create_thumbnails {
     };
 }
 
-my @images = collect_images($cfg->{collect},$cfg->{reject} );
-my %found = map { $_ => $_ } @images;
+my @images;
+tie my %found, 'DB_File', "imagestream.cache";
 
-# Weed out the duplicates
-for (@{ $cfg->{prefer}}) {
-    my ($better, $worse) = @$_;
-    for (grep {/$better/i} (keys %found)) {
-        my ($image) = $_;
-        $image =~ s/$better//i;
-        my $removed = delete $found{ $image . lc $worse };
-        $removed = delete $found{ $image . uc $worse };
+if( $cfg->{from_cache}->[0] ) {
+    # bam!
+} else {
+    @images = collect_images($cfg->{collect},$cfg->{reject} );
+    %found = map { $_ => $_ } @images;
+    # Weed out the duplicates
+    for (@{ $cfg->{prefer}}) {
+        my ($better, $worse) = @$_;
+        for (grep {/$better/i} (keys %found)) {
+            my ($image) = $_;
+            $image =~ s/$better//i;
+            my $removed = delete $found{ $image . lc $worse };
+            $removed = delete $found{ $image . uc $worse };
+        };
     };
 };
 
 # To sort the images by timestamp of last modification (descending),
 # we need to fetch the statistics for all files...
 @images = sort { $b->{mtime} <=> $a->{mtime} }
-          map { App::ImageStream::Image->new( file => $_ ) } values %found;
+          map { App::ImageStream::Image->new( file => file($_) ) } values %found;
 
 my @selected;
 
 # To reduce IO, we only read the metadata of images that pass the
 # other criteria. This prevents us from using grep ...
 status 1, sprintf "Filtering %d images", scalar @images;
-# XXX Make status message out of this warning
 
 my $cutoff = time() - $cfg->{cutoff}->[0] * 24 * 3600;
 my %exclude_tag = map { uc $_ => 1 } @{ $cfg->{exclude_tag} };
@@ -234,6 +240,9 @@ while (@images
 my $taken = (time - $start) || 1;
 my $rate = 0+@selected / $taken;
 status 2, sprintf "Created %d thumbnails in %d seconds (%d/s)", 0+@selected, $taken, $rate;
+
+# Update %found to only store as many files as we really need in the cache:
+%found = map { $_->{file} => $_->{file} } @selected;
 
 @images = (); # discard the remaining images, if any, to free up some more memory
 
