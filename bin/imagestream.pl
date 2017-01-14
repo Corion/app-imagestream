@@ -225,19 +225,22 @@ while (@images
     };
     $last_time = $capture_date;
     push @{ $info->{tags} }, $ref_date;
-    
-    if (! grep { exists $exclude_tag{uc $_} } @{ $info->{exif}->{Keywords} }) {
+
+    my @keywords = ref $info->{exif}->{Keywords} ? @{ $info->{exif}->{Keywords} }
+                 : defined $info->{exif}->{Keywords} ? $info->{exif}->{Keywords}
+                 : ();
+     if (! grep { exists $exclude_tag{uc $_} } @keywords) {
         push @selected, $info;
 
         # Create thumbnail directly instead of keeping the image preview in memory
         # XXX Ideally, we should check whether the new file is different
         # from the old file before creating a new timestamp
         create_thumbnails(@{ $cfg->{ output } },$cfg->{ size },$info);
-        
+
         # Save some memory
         $info->release_metadata();
     } else {
-        status 3, "Rejected $info->{file} (tagged)";
+        status 3, "Rejected $info->{file} (tagged @keywords)";
         # XXX verbose: output rejection status
     }
 }
