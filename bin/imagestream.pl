@@ -26,18 +26,20 @@ BEGIN {
 use vars qw'%thumbnail_handlers';
 
 sub collect_config {
-    my(@files) = @_; # this should also take a reference to %ENV and @ARGV
-    # instead of implicitly using global variables
+    my($argv, $env, $files) = @_;
+    $argv  ||= [];
+    $files ||= [];
 
     # make a copy here so we can call collect_config multiple times
-    my @cmdline = @ARGV;
+    my @cmdline = @$argv;
 
     my $cfg = Config::Collect->collect(
         \%App::ImageStream::Config::Items::items,
 
         config_default => 'imagestream.cfg',
-        config_file => \@files,
-        env => 'IMAGESTREAM_',
+        config_file => $files,
+        env_prefix => 'IMAGESTREAM_',
+        env        => $env,
 
         getopt => {
             'f|force' => \my $force,

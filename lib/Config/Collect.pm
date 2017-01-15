@@ -85,10 +85,11 @@ sub collect {
         },
         $opts{ argv },
     );
+    # XXX Should this just call Pod::Usage if we fail?!
+    #     Currently we discard $ok
     push @options, $opt_commandline;
-    # XXX Should this just call Pod::Usage?!
 
-    # XXX Parse %ENV here
+    # XXX Parse $opts{ env } and $opts{ env_prefix } here
 
     if (! @config_files) {
         @config_files = @{ $opts{ config_file } };
