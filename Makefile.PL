@@ -33,6 +33,7 @@ WriteMakefile1(
                         'File::HomeDir' => 0, # for the config system
                         'List::Util' => 0, # for reduce()
                         'Text::CleanFragment' => 0, # to create sanitized URLs
+                        'Getopt::Long' => 0, # long since in core, but...
                       }, # e.g., Module::Name => 1.1
     ABSTRACT_FROM   => 'lib/App/ImageStream.pm', # retrieve abstract from module
     AUTHOR          => 'Max Maischein <corion@cpan.org>',
