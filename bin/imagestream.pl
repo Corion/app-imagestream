@@ -65,7 +65,7 @@ my $theme = App::ImageStream->get_theme($cfg);
 # configuration file instead of returning all of them
 if( $theme->contains_file('theme.cfg') ) {
     my $theme_config = $theme->get_content('theme.cfg');
-    $cfg = collect_config( \$theme_config );
+    $cfg = collect_config( [\$theme_config] );
 };
 
 my $inkscape = $cfg->{inkscape}->[0];
